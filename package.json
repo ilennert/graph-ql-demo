@@ -1,5 +1,5 @@
 {
-  "name": "graphql-demo",
+  "name": "graph-ql-demo",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -27,6 +27,7 @@
     "apollo-server-express": "^2.7.0",
     "graphql": "^14.4.2",
     "graphql-tools": "^4.0.5",
+    "guid-typescript": "^1.0.9",
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",
     "rxjs": "^6.3.3"
