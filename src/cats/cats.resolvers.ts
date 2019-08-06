@@ -17,7 +17,7 @@ export class CatsResolvers {
 
   @Query()
   @UseGuards(CatsGuard)
-  async getCats() {
+  async cats() {
     return await this.catsService.findAll().toPromise();
   }
 

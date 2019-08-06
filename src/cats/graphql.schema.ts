@@ -5,39 +5,44 @@
  */
 
 /* tslint:disable */
-export interface CreateCatInput {
+export class CreateCatInput {
     id?: string;
     name: string;
     age: number;
     breed: string;
 }
 
-export interface UpdateCatInput {
+export class UpdateCatInput {
     name?: string;
     age?: number;
     breed?: string;
 }
 
-export interface Cat {
+export class Cat {
     id: string;
     name: string;
     age: number;
     breed: string;
 }
 
-export interface IMutation {
-    createCat(createCatInput?: CreateCatInput): Cat | Promise<Cat>;
-    removeCat(id: string): Cat | Promise<Cat>;
-    updateCat(id: string, updateCatInput?: UpdateCatInput): Cat | Promise<Cat>;
+export abstract class IMutation {
+    abstract createCat(createCatInput?: CreateCatInput): Cat | Promise<Cat>;
+
+    abstract removeCat(id: string): Cat | Promise<Cat>;
+
+    abstract updateCat(id: string, updateCatInput?: UpdateCatInput): Cat | Promise<Cat>;
 }
 
-export interface IQuery {
-    getCats(): Cat[] | Promise<Cat[]>;
-    cat(id: string): Cat | Promise<Cat>;
+export abstract class IQuery {
+    abstract cats(): Cat[] | Promise<Cat[]>;
+
+    abstract cat(id: string): Cat | Promise<Cat>;
 }
 
-export interface ISubscription {
-    catCreated(): Cat | Promise<Cat>;
-    catRemoved(): Cat | Promise<Cat>;
-    catUpdated(): Cat | Promise<Cat>;
+export abstract class ISubscription {
+    abstract catCreated(): Cat | Promise<Cat>;
+
+    abstract catRemoved(): Cat | Promise<Cat>;
+
+    abstract catUpdated(): Cat | Promise<Cat>;
 }
