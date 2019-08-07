@@ -1,12 +1,15 @@
 type Query {
-    cats: [Cat!]!
+    cats: [Cat]
     cat(id: ID!): Cat
+    catsWithOwners: [CatWithOwners!]!
 }
 
 type Mutation {
     createCat(createCatInput: CreateCatInput): Cat
     removeCat(id: ID!): Cat
     updateCat(id: ID!, updateCatInput: UpdateCatInput): Cat
+    createOwner (createOwnerInput: CreateOwnerInput): Owner
+
 }
 
 type Subscription {
@@ -14,12 +17,21 @@ type Subscription {
     catRemoved: Cat
     catUpdated: Cat
 }
+scalar DateTime
 
 type Cat {
     id: String!
     name: String!
     age: Float!
     breed: String!
+}
+
+type CatWithOwners {
+    id: String!
+    name: String!
+    age: Float!
+    breed: String!
+    ownersRanges: [OwnerRange!]!
 }
 
 input CreateCatInput {
@@ -33,4 +45,79 @@ input UpdateCatInput {
     name: String
     age: Float
     breed: String
+}
+
+input CatIdInput {
+    id: ID!
+}
+
+type Address {
+    id: ID!
+    street: String!
+    city: String!
+    stateProv: String!
+    zipPostal: String!
+}
+
+input AddressIdInput {
+    id: ID!
+}
+
+input AddressInput {
+    street: String!
+    city: String!
+    stateProv: String!
+    zipPostal: String!
+}
+
+input AddressUpdateInput {
+    street: String
+    city: String
+    stateProv: String
+    zipPostal: String
+}
+
+type OwnerRange {
+    id: ID!
+    owner: Owner!
+    start: DateTime!
+    end: DateTime!
+}
+
+type Person {
+    id: ID!
+    name: String!
+    address: [Address!]!
+    birthdate: DateTime!
+}
+
+input CreatePersonInput {
+    name: String!
+    address: []
+}
+
+type Owner implements Person {
+    id: ID!
+    name: String!
+    address: [Address!]!
+    birthdate: DateTime!
+    cats: [Cat!]!
+}
+
+input CreateOwnerInput {
+    name: String!
+    address: [AddressIdInput!]!
+    birthdate: DateTime!
+    cats: [CatIdInput!]!
+}
+
+input OwnerIdInput {
+    id: ID!
+}
+
+input OwnerUpdateInput {
+    name: String
+    address: [AddressIdInput]
+    birthdate: DateTime
+    cats: [CatIdInput]
 }

@@ -1,0 +1,6 @@
+
+type PetStore {
+    id: ID!
+    name: String!
+    address: [Address!]!
+}
