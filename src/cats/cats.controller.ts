@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 
 import { CreateCatDto } from './dto';
 import { Cat, ListAllEntities } from './model';
-import { CatsRepoService } from './services';
+import { CatRepoService } from './services';
 
 @Controller('cats')
 export class CatsController {
@@ -34,5 +34,5 @@ export class CatsController {
         return this.service.remove(id);     // `This action removes a #${id} cat`;
     }
 
-    constructor(private readonly service: CatsRepoService) {}
+    constructor(private readonly service: CatRepoService) {}
 }

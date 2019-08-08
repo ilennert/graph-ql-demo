@@ -5,14 +5,14 @@ import { PubSub } from 'graphql-subscriptions';
 
 import { Cat } from './graphql.schema';
 import { CatsGuard } from './cats.guard';
-import { CatsRepoService } from './services';
+import { CatRepoService } from './services';
 import { CreateCatDto } from './dto/create-cat.dto';
 
 const pubSub = new PubSub();
 
 @Resolver('Cat')
 export class CatsResolvers {
-  constructor(private readonly catsService: CatsRepoService) {
+  constructor(private readonly catsService: CatRepoService) {
   }
 
   @Query()

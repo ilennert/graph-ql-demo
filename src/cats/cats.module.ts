@@ -2,7 +2,7 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 
-import { CatsRepoService, TableManagementService } from './services';
+import { CatRepoService, TableManagementService } from './services';
 import { CatsController } from './cats.controller';
 import { CatsResolvers } from './cats.resolvers';
 import { join } from 'path';
@@ -15,8 +15,8 @@ import { join } from 'path';
             // definitions: { path: join(process.cwd(), 'src/cats/graphql.schema.ts') }
         })
     ],
-    providers: [ TableManagementService, CatsRepoService, CatsResolvers ],
-    exports: [ CatsRepoService, TableManagementService ],
+    providers: [ TableManagementService, CatRepoService, CatsResolvers ],
+    exports: [ CatRepoService, TableManagementService ],
     controllers: [ CatsController ]
 })
 export class CatsModule {}

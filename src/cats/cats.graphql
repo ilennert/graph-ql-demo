@@ -1,15 +1,21 @@
 type Query {
-    cats: [Cat]
+    cats: [Cat!]!
     cat(id: ID!): Cat
     catsWithOwners: [CatWithOwners!]!
+    catsWithoutOwners: [CatWithOwners!]!
+    catOwners: [OwnerRange!]!
+    catSanctuaries: [PetSanctuary!]!
 }
 
 type Mutation {
     createCat(createCatInput: CreateCatInput): Cat
     removeCat(id: ID!): Cat
     updateCat(id: ID!, updateCatInput: UpdateCatInput): Cat
-    createOwner (createOwnerInput: CreateOwnerInput): Owner
-
+    createCatOwner (createOwnerInput: CreateOwnerInput): Owner
+    createOwnerFromId(createOwner: OwnerIdInput): Owner
+    createCatSanctuary(createPetSanctuaryInput: CreatePetSanctuaryInput): PetSanctuary
+    createAddress(addressInput: AddressInput): Address
+    unOwnCat(senctuary: PetSanctuaryIdInput, cat: CatIdInput): PetSanctuary
 }
 
 type Subscription {
@@ -26,7 +32,76 @@ type Cat {
     breed: String!
 }
 
-type CatWithOwners {
+type Address {
+    id: ID!
+    street: String!
+    city: String!
+    stateProv: String!
+    zipPostal: String!
+}
+
+type PetSanctuary {
+    id: ID!
+    name: String!
+    address: Address!
+    catInventory: [Cat!]!
+}
+
+input PetSanctuaryIdInput {
+    id: ID!
+}
+
+input CreatePetSanctuaryInput {
+    name: String!
+    addressRef: String!
+}
+
+input AddressIdInput {
+    id: ID!
+}
+
+input AddressInput {
+    street: String!
+    city: String!
+    stateProv: String!
+    zipPostal: String!
+}
+
+input AddressUpdateInput {
+    street: String
+    city: String
+    stateProv: String
+    zipPostal: String
+}
+
+type Person {
+    id: ID!
+    name: String!
+    address: [Address!]!
+    birthdate: DateTime
+}
+
+type Owner implements Person {
+    id: ID!
+    name: String!
+    address: [Address!]!
+    birthdate: DateTime
+    cats: [Cat!]!
+}
+
+type CatOwnedRange {
+    id: ID!
+    ownerRanges: [OwnerRange!]!
+}
+
+type OwnerRange {
+    id: ID!
+    owner: Owner!
+    start: DateTime!
+    end: DateTime!
+}
+
+type CatWithOwners implements Cat {
     id: String!
     name: String!
     age: Float!
@@ -51,63 +126,16 @@ input CatIdInput {
     id: ID!
 }
 
-type Address {
-    id: ID!
-    street: String!
-    city: String!
-    stateProv: String!
-    zipPostal: String!
-}
-
-input AddressIdInput {
-    id: ID!
-}
-
-input AddressInput {
-    street: String!
-    city: String!
-    stateProv: String!
-    zipPostal: String!
-}
-
-input AddressUpdateInput {
-    street: String
-    city: String
-    stateProv: String
-    zipPostal: String
-}
-
-type OwnerRange {
-    id: ID!
-    owner: Owner!
-    start: DateTime!
-    end: DateTime!
-}
-
-type Person {
-    id: ID!
-    name: String!
-    address: [Address!]!
-    birthdate: DateTime!
-}
-
 input CreatePersonInput {
     name: String!
-    address: []
-}
-
-type Owner implements Person {
-    id: ID!
-    name: String!
-    address: [Address!]!
-    birthdate: DateTime!
-    cats: [Cat!]!
+    address: [AddressIdInput!]!
+    birthdate: DateTime
 }
 
 input CreateOwnerInput {
     name: String!
     address: [AddressIdInput!]!
-    birthdate: DateTime!
+    birthdate: DateTime
     cats: [CatIdInput!]!
 }
 

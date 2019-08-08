@@ -8,7 +8,7 @@ import { Cat, initCat } from 'src/cats/model';
 import { TableManagementService } from '../services/table-management.service';
 
 @Injectable()
-export class CatsRepoService {
+export class CatRepoService {
     private cats: Cat[] = [];
     private channel: number;
 
@@ -47,6 +47,10 @@ export class CatsRepoService {
 
     findOneById(id: string): Observable<Cat> {
         return of(this.cats.find(c => c.id === id));
+    }
+
+    findOneByIdSync(id: string): Cat {
+        return this.cats.find(c => c.id === id);
     }
 
     update(id: string, update: Partial<Cat>): Observable<Cat> {
