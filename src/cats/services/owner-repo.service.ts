@@ -100,20 +100,27 @@ export class OwnerRepoService {
         if (!person) {
             return of(null);
         }
-        const newCat: Address = {
-            ...address,
+        const changedOwnerItem: OwnerItem = {
+            ...person,
             ...update
         };
         this.people = this.people.map(el => {
             if (el.id === id) {
-                return newCat;
+                return changedOwnerItem;
             }
             return el;
         });
+        const changedOwner: Owner = {
+            id: changedOwnerItem.id,
+            name: changedOwnerItem.name,
+            address: changedOwnerItem.addressRef.map(aid => this.addressService.findOneByIdSync(aid)),
+            birthdate: changedOwnerItem.birthdate,
+            cats: changedOwnerItem.catIds.map(cid => this.catService.findOneByIdSync(cid))
+        };
         // re-write the list with the object that has been updated
         // same as remove
         this.tableService.writeData(this.channel, this.people);
-        return of(newCat);
+        return of(changedOwner);
     }
 
     constructor(private readonly tableService: TableManagementService,
