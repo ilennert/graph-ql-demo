@@ -15,7 +15,7 @@ type Mutation {
     createOwnerFromId(createOwner: OwnerIdInput): Owner
     createCatSanctuary(createPetSanctuaryInput: CreatePetSanctuaryInput): PetSanctuary
     createAddress(addressInput: AddressInput): Address
-    unOwnCat(senctuary: PetSanctuaryIdInput, cat: CatIdInput): PetSanctuary
+    unOwnCat(senctuaryId: ID!, ownerId: ID!, catId: ID!): PetSanctuary
 }
 
 type Subscription {

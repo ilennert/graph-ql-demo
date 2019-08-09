@@ -27,13 +27,6 @@ export class CatIdInput {
     id: string;
 }
 
-export class CreateAddressInput {
-    street: string;
-    city: string;
-    state: string;
-    zip: string;
-}
-
 export class CreateCatInput {
     id?: string;
     name: string;
@@ -74,13 +67,6 @@ export class PetSanctuaryIdInput {
     id: string;
 }
 
-export class UpdateAddressInput {
-    street?: string;
-    city?: string;
-    state?: string;
-    zip?: string;
-}
-
 export class UpdateCatInput {
     name?: string;
     age?: number;
@@ -91,8 +77,6 @@ export class Address {
     id: string;
     street: string;
     city: string;
-    state: string;
-    zip: string;
     stateProv: string;
     zipPostal: string;
 }
@@ -132,7 +116,7 @@ export abstract class IMutation {
 
     abstract createAddress(addressInput?: AddressInput): Address | Promise<Address>;
 
-    abstract unOwnCat(senctuary?: PetSanctuaryIdInput, cat?: CatIdInput): PetSanctuary | Promise<PetSanctuary>;
+    abstract unOwnCat(senctuaryId: string, ownerId: string, catId: string): PetSanctuary | Promise<PetSanctuary>;
 }
 
 export class Owner implements Person {
@@ -162,12 +146,6 @@ export class PetSanctuary {
     name: string;
     address: Address;
     catInventory: Cat[];
-}
-
-export class PetStore {
-    id: string;
-    name: string;
-    address: Address[];
 }
 
 export abstract class IQuery {
