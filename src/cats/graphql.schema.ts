@@ -27,6 +27,14 @@ export class CatIdInput {
     id: string;
 }
 
+export class CatOwnerRangeInput {
+    catId: string;
+    ownerId?: string;
+    sanctuaryId?: string;
+    start: DateTimeInput;
+    end?: DateTimeInput;
+}
+
 export class CreateCatInput {
     id?: string;
     name: string;
@@ -50,6 +58,20 @@ export class CreatePersonInput {
 export class CreatePetSanctuaryInput {
     name: string;
     addressRef: string;
+}
+
+export class DateTimeInput {
+    dateTime?: string;
+    year?: number;
+    month?: number;
+    day?: number;
+    hour?: number;
+    minute?: number;
+    second?: number;
+    millisecond?: number;
+    pm?: boolean;
+    hour24?: boolean;
+    zone?: string;
 }
 
 export class OwnerIdInput {
@@ -88,17 +110,13 @@ export class Cat {
     breed: string;
 }
 
-export class CatOwnedRange {
+export class CatOwnerRange {
     id: string;
-    ownerRanges: OwnerRange[];
-}
-
-export class CatWithOwners implements Cat {
-    id: string;
-    name: string;
-    age: number;
-    breed: string;
-    ownersRanges: OwnerRange[];
+    cat: Cat;
+    owner?: Owner;
+    sanctuary?: PetSanctuary;
+    start: DateTime;
+    end?: DateTime;
 }
 
 export abstract class IMutation {
@@ -127,13 +145,6 @@ export class Owner implements Person {
     cats: Cat[];
 }
 
-export class OwnerRange {
-    id: string;
-    owner: Owner;
-    start: DateTime;
-    end: DateTime;
-}
-
 export class Person {
     id: string;
     name: string;
@@ -153,11 +164,11 @@ export abstract class IQuery {
 
     abstract cat(id: string): Cat | Promise<Cat>;
 
-    abstract catsWithOwners(): CatWithOwners[] | Promise<CatWithOwners[]>;
+    abstract catsWithOwners(): CatOwnerRange[] | Promise<CatOwnerRange[]>;
 
-    abstract catsWithoutOwners(): CatWithOwners[] | Promise<CatWithOwners[]>;
+    abstract catsWithoutOwners(): CatOwnerRange[] | Promise<CatOwnerRange[]>;
 
-    abstract catOwners(): OwnerRange[] | Promise<OwnerRange[]>;
+    abstract catOwners(): CatOwnerRange[] | Promise<CatOwnerRange[]>;
 
     abstract catSanctuaries(): PetSanctuary[] | Promise<PetSanctuary[]>;
 }

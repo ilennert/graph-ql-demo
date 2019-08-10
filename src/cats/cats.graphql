@@ -1,9 +1,9 @@
 type Query {
     cats: [Cat!]!
     cat(id: ID!): Cat
-    catsWithOwners: [CatWithOwners!]!
-    catsWithoutOwners: [CatWithOwners!]!
-    catOwners: [OwnerRange!]!
+    catsWithOwners: [CatOwnerRange!]!
+    catsWithoutOwners: [CatOwnerRange!]!
+    catOwners: [CatOwnerRange!]!
     catSanctuaries: [PetSanctuary!]!
 }
 
@@ -89,24 +89,35 @@ type Owner implements Person {
     cats: [Cat!]!
 }
 
-type CatOwnedRange {
+type CatOwnerRange {
     id: ID!
-    ownerRanges: [OwnerRange!]!
-}
-
-type OwnerRange {
-    id: ID!
-    owner: Owner!
+    cat: Cat!
+    owner: Owner
+    sanctuary: PetSanctuary
     start: DateTime!
-    end: DateTime!
+    end: DateTime
 }
 
-type CatWithOwners implements Cat {
-    id: String!
-    name: String!
-    age: Float!
-    breed: String!
-    ownersRanges: [OwnerRange!]!
+input DateTimeInput {
+    dateTime: String
+    year: Int
+    month: Int
+    day: Int
+    hour: Int
+    minute: Int
+    second: Int
+    millisecond: Int
+    pm: Boolean
+    hour24: Boolean
+    zone: String
+}
+
+input CatOwnerRangeInput {
+    catId: ID!
+    ownerId: ID
+    sanctuaryId: ID
+    start: DateTimeInput!
+    end: DateTimeInput
 }
 
 input CreateCatInput {

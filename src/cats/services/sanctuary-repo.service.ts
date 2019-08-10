@@ -77,6 +77,17 @@ export class SanctuaryRepoService {
         return of(retval);
     }
 
+    findOneByIdSync(id: string): PetSanctuary {
+        const sanctuary = this.sanctuaries.find(c => c.id === id);
+        const retval: PetSanctuary = {
+            id: sanctuary.id,
+            name: sanctuary.name,
+            address: this.addressService.findOneByIdSync(sanctuary.addressRef),
+            catInventory: sanctuary.catInventoryRef.map(cid => this.catService.findOneByIdSync(cid))
+        };
+        return retval;
+    }
+
     update(id: string, update: Partial<SanctuaryModel>): Observable<PetSanctuary> {
         const sanctuary = this.sanctuaries.find(c => c.id === id);
         if (!sanctuary) {
