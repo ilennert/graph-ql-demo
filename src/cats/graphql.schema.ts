@@ -137,19 +137,12 @@ export abstract class IMutation {
     abstract unOwnCat(senctuaryId: string, ownerId: string, catId: string): PetSanctuary | Promise<PetSanctuary>;
 }
 
-export class Owner implements Person {
+export class Owner {
     id: string;
     name: string;
     address: Address[];
     birthdate?: DateTime;
     cats: Cat[];
-}
-
-export class Person {
-    id: string;
-    name: string;
-    address: Address[];
-    birthdate?: DateTime;
 }
 
 export class PetSanctuary {

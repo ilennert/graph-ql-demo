@@ -30,6 +30,7 @@ type Cat {
     name: String!
     age: Float!
     breed: String!
+    owners: [CatOwnerRange]!
 }
 
 type Address {
@@ -74,14 +75,14 @@ input AddressUpdateInput {
     zipPostal: String
 }
 
-type Person {
-    id: ID!
-    name: String!
-    address: [Address!]!
-    birthdate: DateTime
-}
+# type Person {
+#     id: ID!
+#     name: String!
+#     address: [Address!]!
+#     birthdate: DateTime
+# }
 
-type Owner implements Person {
+type Owner {
     id: ID!
     name: String!
     address: [Address!]!

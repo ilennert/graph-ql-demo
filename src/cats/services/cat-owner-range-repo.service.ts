@@ -76,6 +76,33 @@ export class OwnerRangeRepoService {
         }));
     }
 
+    findAllRangesBySanctuary(sanctuaryId: string): CatOwnerRangeItem[] {
+        return this.catRanges.filter((cor) => cor.sanctuaryId === sanctuaryId);
+    }
+
+    findAllRangesByCat(catId: string): CatOwnerRangeItem[] {
+        return this.catRanges.filter((cor) => cor.catId === catId);
+    }
+
+    findAllRangesByOwner(ownerId: string): CatOwnerRangeItem[] {
+        return this.catRanges.filter((cor) => cor.ownerId === ownerId);
+    }
+
+    findAllBySanctuary(limit?: number): Observable<CatOwnerRange[]> {
+        limit = !limit ? this.catRanges.length : limit;
+        return of(this.catRanges.filter((a, i) => i < limit).map(cr => {
+            const retval: CatOwnerRange = {
+                id: cr.id,
+                cat: this.catService.findOneByIdSync(cr.catId),
+                owner: cr.ownerId ? this.ownerService.findOneByIdSync(cr.ownerId) : undefined,
+                sanctuary: cr.sanctuaryId ? this.sanctuaryService.findOneByIdSync(cr.sanctuaryId) : undefined,
+                start: cr.start.toString(),
+                end: cr.end ? cr.end.toString() : undefined
+                };
+            return retval;
+        }));
+    }
+
     findOneById(id: string): Observable<CatOwnerRange> {
         const range = this.catRanges.find(p => p.id === id);
         return of({
