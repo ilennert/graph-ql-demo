@@ -1,5 +1,7 @@
 
-export class Cat {
+import { Cat } from '../graphql.schema';
+
+export class CatItem {
     id: string;
     name: string;
     age: number;
@@ -12,4 +14,5 @@ export const initCat: Cat = {
     name: '',
     age: 0,
     breed: ''
+    // owners: []
 };

@@ -14,7 +14,18 @@ export class TableManagementService {
     }
 
     public readData(tableChan: number): any {
-        return JSON.parse(fs.readFileSync(this.channel[tableChan], 'utf-8'));
+        let fileContents;
+        try {
+            fileContents = fs.readFileSync(this.channel[tableChan], 'utf-8');
+        } catch (err) {
+            if (err.code === 'ENOENT') {
+                this.log(`File not found! ${this.channel[tableChan]}`);
+                return [];
+            } else {
+                throw err;
+            }
+        }
+        return JSON.parse(fileContents);
     }
 
     public writeData(tableChan: number, obj: any): void {
@@ -23,5 +34,7 @@ export class TableManagementService {
     }
 
     private log(...arg: any[]): void {
+        // tslint:disable-next-line: no-console
+        console.log(arg);
     }
 }

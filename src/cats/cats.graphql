@@ -30,7 +30,7 @@ type Cat {
     name: String!
     age: Float!
     breed: String!
-    owners: [CatOwnerRange]!
+    # owners: [CatOwnerRange]!
 }
 
 type Address {
@@ -92,7 +92,7 @@ type Owner {
 
 type CatOwnerRange {
     id: ID!
-    cat: Cat!
+    catId: ID!
     owner: Owner
     sanctuary: PetSanctuary
     start: DateTime!

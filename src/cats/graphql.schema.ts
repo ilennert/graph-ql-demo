@@ -112,7 +112,7 @@ export class Cat {
 
 export class CatOwnerRange {
     id: string;
-    cat: Cat;
+    catId: string;
     owner?: Owner;
     sanctuary?: PetSanctuary;
     start: DateTime;

@@ -5,7 +5,7 @@ import { PubSub } from 'graphql-subscriptions';
 
 import { Cat } from './graphql.schema';
 import { CatsGuard } from './cats.guard';
-import { CatRepoService } from './services';
+import { CatRepoService } from './services/cats-repo.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 
 const pubSub = new PubSub();

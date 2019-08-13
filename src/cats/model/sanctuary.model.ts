@@ -1,5 +1,5 @@
 
-import { Address, PetSanctuary } from '../graphql.schema';
+import { Address, PetSanctuary, CatOwnerRange } from '../graphql.schema';
 import { initAddress } from './address.model';
 import { initCat } from './cat.model';
 

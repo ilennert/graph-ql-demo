@@ -5,7 +5,7 @@ import { Guid } from 'guid-typescript';
 
 import { CatOwnerRangeInput, CatOwnerRange, DateTimeInput } from '../graphql.schema';
 import { TableManagementService } from '../services/table-management.service';
-import { CatRepoService } from '../services/cats-repo.service';
+// import { CatRepoService } from '../services/cats-repo.service';
 import { OwnerRepoService } from '../services/owner-repo.service';
 import { SanctuaryRepoService } from '../services/sanctuary-repo.service';
 import { CatOwnerRangeItem } from '../model/cat-owner-range.model';
@@ -32,7 +32,7 @@ export class OwnerRangeRepoService {
 
         const retval: CatOwnerRange = {
             id: range.id,
-            cat: this.catService.findOneByIdSync(range.catId),
+            catId: range.catId,     // this.catService.findOneByIdSync(range.catId),
             owner: range.ownerId ? this.ownerService.findOneByIdSync(range.ownerId) : undefined,
             sanctuary: range.sanctuaryId ? this.sanctuaryService.findOneByIdSync(range.sanctuaryId) : undefined,
             start: range.start.toString(),
@@ -51,7 +51,7 @@ export class OwnerRangeRepoService {
 
         const retval: CatOwnerRange = {
             id: range.id,
-            cat: this.catService.findOneByIdSync(range.catId),
+            catId: range.catId,     // this.catService.findOneByIdSync(range.catId),
             owner: range.ownerId ? this.ownerService.findOneByIdSync(range.ownerId) : undefined,
             sanctuary: range.sanctuaryId ? this.sanctuaryService.findOneByIdSync(range.sanctuaryId) : undefined,
             start: range.start.toString(),
@@ -66,7 +66,7 @@ export class OwnerRangeRepoService {
         return of(this.catRanges.filter((a, i) => i < limit).map(cr => {
             const retval: CatOwnerRange = {
                 id: cr.id,
-                cat: this.catService.findOneByIdSync(cr.catId),
+                catId: cr.catId,    // this.catService.findOneByIdSync(cr.catId),
                 owner: cr.ownerId ? this.ownerService.findOneByIdSync(cr.ownerId) : undefined,
                 sanctuary: cr.sanctuaryId ? this.sanctuaryService.findOneByIdSync(cr.sanctuaryId) : undefined,
                 start: cr.start.toString(),
@@ -76,16 +76,46 @@ export class OwnerRangeRepoService {
         }));
     }
 
-    findAllRangesBySanctuary(sanctuaryId: string): CatOwnerRangeItem[] {
-        return this.catRanges.filter((cor) => cor.sanctuaryId === sanctuaryId);
+    findAllRangesBySanctuary(sanctuaryId: string): CatOwnerRange[] {
+        return this.catRanges.filter((cor) => cor.sanctuaryId === sanctuaryId)
+            .map(or => {
+                return {
+                    id: or.id,
+                    catId: or.catId,    // this.catService.findOneByIdSync(or.catId),
+                    owner: or.ownerId ? this.ownerService.findOneByIdSync(or.ownerId) : undefined,
+                    sanctuary: or.sanctuaryId ? this.sanctuaryService.findOneByIdSync(or.sanctuaryId) : undefined,
+                    start: or.start.toString(),
+                    end: or.end ? or.end.toString() : undefined
+                };
+            });
     }
 
-    findAllRangesByCat(catId: string): CatOwnerRangeItem[] {
-        return this.catRanges.filter((cor) => cor.catId === catId);
+    findAllRangesByCat(catId: string): CatOwnerRange[] {
+        return this.catRanges.filter((cor) => cor.catId === catId)
+            .map(or => {
+                return {
+                    id: or.id,
+                    catId: or.catId, // this.catService.findOneByIdSync(or.catId),
+                    owner: or.ownerId ? this.ownerService.findOneByIdSync(or.ownerId) : undefined,
+                    sanctuary: or.sanctuaryId ? this.sanctuaryService.findOneByIdSync(or.sanctuaryId) : undefined,
+                    start: or.start.toString(),
+                    end: or.end ? or.end.toString() : undefined
+                };
+            });
     }
 
-    findAllRangesByOwner(ownerId: string): CatOwnerRangeItem[] {
-        return this.catRanges.filter((cor) => cor.ownerId === ownerId);
+    findAllRangesByOwner(ownerId: string): CatOwnerRange[] {
+        return this.catRanges.filter((cor) => cor.ownerId === ownerId)
+            .map(or => {
+                return {
+                    id: or.id,
+                    catId: or.catId, // this.catService.findOneByIdSync(or.catId),
+                    owner: or.ownerId ? this.ownerService.findOneByIdSync(or.ownerId) : undefined,
+                    sanctuary: or.sanctuaryId ? this.sanctuaryService.findOneByIdSync(or.sanctuaryId) : undefined,
+                    start: or.start.toString(),
+                    end: or.end ? or.end.toString() : undefined
+                };
+            });
     }
 
     findAllBySanctuary(limit?: number): Observable<CatOwnerRange[]> {
@@ -93,7 +123,7 @@ export class OwnerRangeRepoService {
         return of(this.catRanges.filter((a, i) => i < limit).map(cr => {
             const retval: CatOwnerRange = {
                 id: cr.id,
-                cat: this.catService.findOneByIdSync(cr.catId),
+                catId: cr.catId, // this.catService.findOneByIdSync(cr.catId),
                 owner: cr.ownerId ? this.ownerService.findOneByIdSync(cr.ownerId) : undefined,
                 sanctuary: cr.sanctuaryId ? this.sanctuaryService.findOneByIdSync(cr.sanctuaryId) : undefined,
                 start: cr.start.toString(),
@@ -107,7 +137,7 @@ export class OwnerRangeRepoService {
         const range = this.catRanges.find(p => p.id === id);
         return of({
             id: range.id,
-            cat: this.catService.findOneByIdSync(range.catId),
+            catId: range.catId,  // this.catService.findOneByIdSync(range.catId),
             owner: range.ownerId ? this.ownerService.findOneByIdSync(range.ownerId) : undefined,
             sanctuary: range.sanctuaryId ? this.sanctuaryService.findOneByIdSync(range.sanctuaryId) : undefined,
             start: range.start.toString(),
@@ -119,7 +149,7 @@ export class OwnerRangeRepoService {
         const range = this.catRanges.find(p => p.id === id);
         return {
             id: range.id,
-            cat: this.catService.findOneByIdSync(range.catId),
+            catId: range.catId, // this.catService.findOneByIdSync(range.catId),
             owner: range.ownerId ? this.ownerService.findOneByIdSync(range.ownerId) : undefined,
             sanctuary: range.sanctuaryId ? this.sanctuaryService.findOneByIdSync(range.sanctuaryId) : undefined,
             start: range.start.toString(),
@@ -134,7 +164,11 @@ export class OwnerRangeRepoService {
         }
         const changedCatOwnerRangeItem: CatOwnerRangeItem = {
             ...range,
-            ...update
+            ownerId: update.owner ? update.owner.id : range.ownerId,
+            catId: update.catId ? update.catId : range.catId,
+            sanctuaryId: update.sanctuary ? update.sanctuary.id : range.sanctuaryId,
+            start: update.start ? update.start : range.start,
+            end: update.end ? update.end : range.end
         };
         this.catRanges = this.catRanges.map(el => {
             if (el.id === id) {
@@ -144,7 +178,7 @@ export class OwnerRangeRepoService {
         });
         const changedOwner: CatOwnerRange = {
             id: changedCatOwnerRangeItem.id,
-            cat: this.catService.findOneByIdSync(changedCatOwnerRangeItem.catId),
+            catId: changedCatOwnerRangeItem.catId,  // this.catService.findOneByIdSync(changedCatOwnerRangeItem.catId),
             owner: changedCatOwnerRangeItem.ownerId ? this.ownerService.findOneByIdSync(changedCatOwnerRangeItem.ownerId) : undefined,
             sanctuary: changedCatOwnerRangeItem.sanctuaryId ? this.sanctuaryService.findOneByIdSync(changedCatOwnerRangeItem.sanctuaryId) : undefined,
             start: changedCatOwnerRangeItem.start.toString(),
@@ -157,7 +191,7 @@ export class OwnerRangeRepoService {
     }
 
     constructor(private readonly tableService: TableManagementService,
-                private readonly catService: CatRepoService,
+                // private readonly catService: CatRepoService,
                 private readonly ownerService: OwnerRepoService,
                 private readonly sanctuaryService: SanctuaryRepoService) {
         this.channel = this.tableService.tableChannel('data/cat-owner-range.json');

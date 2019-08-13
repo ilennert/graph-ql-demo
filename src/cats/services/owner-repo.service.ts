@@ -3,10 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { Observable, of } from 'rxjs';
 import { Guid } from 'guid-typescript';
 
-import { Address, AddressInput, CreatePersonInput, Owner } from '../graphql.schema';
-import { initAddress } from '../model/address.model';
+import { CreatePersonInput, Owner } from '../graphql.schema';
 import { OwnerItem } from '../model/owner.model';
-import { PersonItem } from '../model/person.model';
 import { TableManagementService } from '../services/table-management.service';
 import { AddressRepoService } from '../services/address-repo.service';
 import { CatRepoService } from '../services/cats-repo.service';

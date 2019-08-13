@@ -2,8 +2,9 @@ import { Controller, Get, Query, Post, Body, Put, Param, Delete } from '@nestjs/
 import { Observable } from 'rxjs';
 
 import { CreateCatDto } from './dto';
-import { Cat, ListAllEntities } from './model';
-import { CatRepoService } from './services';
+import { Cat } from './graphql.schema';
+import { ListAllEntities } from './model';
+import { CatRepoService } from './services/cats-repo.service';
 
 @Controller('cats')
 export class CatsController {
