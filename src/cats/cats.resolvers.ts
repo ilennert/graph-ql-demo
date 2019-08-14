@@ -3,16 +3,26 @@ import { ParseIntPipe, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
 
-import { Cat } from './graphql.schema';
+import {
+  Address,
+  AddressInput,
+  AddressQueryInput,
+  AddressUpdateInput,
+  Cat,
+  PersonInput} from './graphql.schema';
 import { CatsGuard } from './cats.guard';
+import { AddressRepoService } from './services/address-repo.service';
 import { CatRepoService } from './services/cats-repo.service';
+import { OwnerRepoService } from './services/owner-repo.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 
 const pubSub = new PubSub();
 
 @Resolver('Cat')
 export class CatsResolvers {
-  constructor(private readonly catsService: CatRepoService) {
+  constructor(private readonly catsService: CatRepoService,
+              private readonly addressService: AddressRepoService,
+              private readonly ownerService: OwnerRepoService) {
   }
 
   @Query()
@@ -27,6 +37,22 @@ export class CatsResolvers {
     id: string
   ): Promise<Cat> {
     return await this.catsService.findOneById(id).toPromise();
+  }
+
+  @Query('addresses')
+  async addresses(
+    @Args('queryInput')
+    queryInput?: AddressQueryInput
+  ): Promise<Address[]> {
+    return await this.addressService.findAnyByInput(queryInput).toPromise();
+  }
+
+  @Query('people')
+  async people(
+    @Args('personInput')
+    personImput?: PersonInput
+  ): Promise<Owner> {
+    return await this.
   }
 
   @Mutation('createCat')
@@ -48,6 +74,25 @@ export class CatsResolvers {
     const updatedCat = await this.catsService.update(id, updateFields).toPromise();
     pubSub.publish('updatedCat', { catUpdated: updatedCat });
     return updatedCat;
+  }
+
+  @Mutation('createAddress')
+  async createAddress(@Args('addressInput') addressInput: AddressInput): Promise<Address> {
+    const createAddress = await this.addressService.create(addressInput).toPromise();
+    return createAddress;
+  }
+
+  @Mutation('removeAddress')
+  async removeAddress(@Args('id') id: string): Promise<Address> {
+    return await this.addressService.remove(id).toPromise();
+  }
+
+  @Mutation('updateAddress')
+  async updateAddress(
+    @Args('id') id: string,
+    @Args('updateAddress') updateAddress: AddressUpdateInput
+  ): Promise<Address> {
+    return await this.addressService.update(id, updateAddress).toPromise();
   }
 
   @Subscription('catCreated')

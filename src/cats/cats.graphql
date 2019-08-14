@@ -1,9 +1,12 @@
 type Query {
+    addresses(queryInput: AddressQueryInput): [Address]!
+    people(personInput: PersonInput): [Owner]!
+    person(id: ID!): Owner
     cats: [Cat!]!
     cat(id: ID!): Cat
     catsWithOwners: [CatOwnerRange!]!
     catsWithoutOwners: [CatOwnerRange!]!
-    catOwners: [CatOwnerRange!]!
+    catOwners: [Owner!]!
     catSanctuaries: [PetSanctuary!]!
 }
 
@@ -11,10 +14,13 @@ type Mutation {
     createCat(createCatInput: CreateCatInput): Cat
     removeCat(id: ID!): Cat
     updateCat(id: ID!, updateCatInput: UpdateCatInput): Cat
+    createPerson(createPersonInput: CreatePersonInput): Person
     createCatOwner (createOwnerInput: CreateOwnerInput): Owner
     createOwnerFromId(createOwner: OwnerIdInput): Owner
     createCatSanctuary(createPetSanctuaryInput: CreatePetSanctuaryInput): PetSanctuary
-    createAddress(addressInput: AddressInput): Address
+    createAddress(addressInput: AddressInput!): Address
+    removeAddress(id: ID!): Address
+    updateAddress(id: ID!, updateAddress: AddressUpdateInput!): Address
     unOwnCat(senctuaryId: ID!, ownerId: ID!, catId: ID!): PetSanctuary
 }
 
@@ -22,6 +28,7 @@ type Subscription {
     catCreated: Cat
     catRemoved: Cat
     catUpdated: Cat
+    catOwnerShipChanged: CatOwnerRange
 }
 scalar DateTime
 
@@ -75,24 +82,37 @@ input AddressUpdateInput {
     zipPostal: String
 }
 
-# type Person {
-#     id: ID!
-#     name: String!
-#     address: [Address!]!
-#     birthdate: DateTime
-# }
+input AddressQueryInput {
+    street: String
+    city: String
+    stateProv: String
+    zipPostal: String
+}
+
+type Person {
+    id: ID!
+    name: String!
+    address: [Address!]!
+    birthdate: DateTime
+}
+
+input PersonInput {
+    name: String
+    address: AddressInput
+    birthdate: DateTimeInput
+}
 
 type Owner {
     id: ID!
     name: String!
     address: [Address!]!
     birthdate: DateTime
-    cats: [Cat!]!
+    cats: [Cat]
 }
 
 type CatOwnerRange {
     id: ID!
-    catId: ID!
+    cat: Cat!
     owner: Owner
     sanctuary: PetSanctuary
     start: DateTime!

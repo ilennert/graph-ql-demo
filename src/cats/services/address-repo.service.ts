@@ -43,6 +43,33 @@ export class AddressRepoService {
         return of(this.addresses.filter((a, i) => i < limit));
     }
 
+    findAnyByInput(addressInput?: Partial<AddressInput>): Observable<Address[]> {
+        if (addressInput) {
+            const result = this.addresses.filter(adr => {
+                let flag = true;
+                if (flag && addressInput.street) {
+                    flag = this.testpattern(adr.street, addressInput.street);
+                }
+                if (flag && addressInput.city) {
+                    flag = this.testpattern(adr.city, addressInput.city);
+                }
+                if (flag && addressInput.stateProv) {
+                    flag = this.testpattern(adr.stateProv, addressInput.stateProv);
+                }
+                if (flag && addressInput.zipPostal) {
+                    flag = this.testpattern(adr.zipPostal, addressInput.zipPostal);
+                }
+                if (flag) {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+            return of(result);
+        }
+        return of(this.addresses);
+    }
+
     findOneById(id: string): Observable<Address> {
         return of(this.addresses.find(a => a.id === id));
     }
@@ -75,5 +102,25 @@ export class AddressRepoService {
     constructor(private readonly tableService: TableManagementService) {
         this.channel = this.tableService.tableChannel('data/addresses.json');
         this.addresses = this.tableService.readData(this.channel);
+    }
+
+    private testpattern(source: string, pattern: string): boolean {
+        source = source.toLocaleLowerCase();
+        pattern = pattern.toLocaleLowerCase();
+        if (pattern.length > 1) {
+            const swt = pattern[0];
+            pattern = pattern.substring(1);
+            switch (swt) {
+                case '%':   // contains
+                    return source.indexOf(pattern) > -1;
+                case '>':   // begins with
+                    return source.startsWith(pattern);
+                case '<':   // ends with
+                    return source.endsWith(pattern);
+                default:
+                    return source === (swt + pattern);
+            }
+        }
+        return source === pattern;
     }
 }

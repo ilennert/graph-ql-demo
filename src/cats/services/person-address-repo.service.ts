@@ -42,12 +42,36 @@ export class PersonAddressRepoService {
         return of(this.personAddresses.filter((pa) => pa.addressId === addressId));
     }
 
-    findAllByPersonIdSync(personId: string): PersonAddress[] {
-        return this.personAddresses.filter((pa) => pa.personId === personId);
+    findAllByPersonIdSync(personIdi: string | string[]): PersonAddress[] {
+        let personIdsLst: string[];
+        let i = 0;
+        if (typeof personIdi === 'string') {
+            personIdsLst = [ personIdi ];
+        } else {
+            personIdsLst = [ ...personIdi ];
+        }
+        let result: PersonAddress[];
+        do {
+            result = [ ...result,
+                ...this.personAddresses.filter((pa) => pa.personId === personIdsLst[i++])];
+        } while (i < personIdsLst.length);
+        return result;
     }
 
-    findAllByAddressIdSync(addressId: string): PersonAddress[] {
-        return this.personAddresses.filter((pa) => pa.addressId === addressId);
+    findAllByAddressIdSync(addressIdi: string | string[]): PersonAddress[] {
+        let addressIdsLst: string[];
+        let i = 0;
+        if (typeof addressIdi === 'string') {
+            addressIdsLst = [ addressIdi ];
+        } else {
+            addressIdsLst = [ ...addressIdi ];
+        }
+        let result: PersonAddress[];
+        do {
+            result = [ ...result,
+                ...this.personAddresses.filter((pa) => pa.addressId === addressIdsLst[i++])];
+        } while (i < addressIdsLst.length);
+        return result;
     }
 
     constructor(private readonly tableService: TableManagementService) {

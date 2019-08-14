@@ -3,11 +3,13 @@ import { Injectable } from '@nestjs/common';
 import { Observable, of } from 'rxjs';
 import { Guid } from 'guid-typescript';
 
-import { CreatePersonInput, Owner } from '../graphql.schema';
+import { CreatePersonInput, Owner, PersonInput } from '../graphql.schema';
 import { OwnerItem } from '../model/owner.model';
+import { PersonAddress } from '../model/person-address.model';
 import { TableManagementService } from '../services/table-management.service';
 import { AddressRepoService } from '../services/address-repo.service';
 import { CatRepoService } from '../services/cats-repo.service';
+import { PersonAddressRepoService } from '../services/person-address-repo.service';
 
 @Injectable()
 export class OwnerRepoService {
@@ -57,6 +59,11 @@ export class OwnerRepoService {
         return of(person ? retval : null);
     }
 
+    findByAddressIdsList(addressIds: string[]): string[] {
+        const personAddress = this.personAddressService.findAllByAddressIdSync(addressIds);
+        return [ ...new Set(personAddress.map(pa => pa.personId)) ];
+    }
+
     findAll(limit?: number): Observable<Owner[]> {
         limit = !limit ? this.people.length : limit;
         return of(this.people.filter((a, i) => i < limit).map(p => {
@@ -69,6 +76,19 @@ export class OwnerRepoService {
             };
             return retval;
         }));
+    }
+
+    findPeopleByList(ids: string[]): Observable<Owner[]> {
+        return of(this.people.filter(p => ids.some(id => p.id === id))
+            .map(person => {
+                return {
+                    id: person.id,
+                    name: person.name,
+                    address: person.addressRef.map(aid => this.addressService.findOneByIdSync(aid)),
+                    birthdate: person.birthdate,
+                    cats: person.catIds.map(cid => this.catService.findOneByIdSync(cid))
+                };
+            }));
     }
 
     findOneById(id: string): Observable<Owner> {
@@ -123,7 +143,8 @@ export class OwnerRepoService {
 
     constructor(private readonly tableService: TableManagementService,
                 private readonly addressService: AddressRepoService,
-                private readonly catService: CatRepoService) {
+                private readonly catService: CatRepoService,
+                private readonly personAddressService: PersonAddressRepoService) {
         this.channel = this.tableService.tableChannel('data/owner.json');
         this.people = this.tableService.readData(this.channel);
     }

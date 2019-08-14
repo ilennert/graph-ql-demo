@@ -16,6 +16,13 @@ export class AddressInput {
     zipPostal: string;
 }
 
+export class AddressQueryInput {
+    street?: string;
+    city?: string;
+    stateProv?: string;
+    zipPostal?: string;
+}
+
 export class AddressUpdateInput {
     street?: string;
     city?: string;
@@ -85,6 +92,12 @@ export class OwnerUpdateInput {
     cats?: CatIdInput[];
 }
 
+export class PersonInput {
+    name?: string;
+    address?: AddressInput;
+    birthdate?: DateTimeInput;
+}
+
 export class PetSanctuaryIdInput {
     id: string;
 }
@@ -112,7 +125,7 @@ export class Cat {
 
 export class CatOwnerRange {
     id: string;
-    catId: string;
+    cat: Cat;
     owner?: Owner;
     sanctuary?: PetSanctuary;
     start: DateTime;
@@ -126,13 +139,19 @@ export abstract class IMutation {
 
     abstract updateCat(id: string, updateCatInput?: UpdateCatInput): Cat | Promise<Cat>;
 
+    abstract createPerson(createPersonInput?: CreatePersonInput): Person | Promise<Person>;
+
     abstract createCatOwner(createOwnerInput?: CreateOwnerInput): Owner | Promise<Owner>;
 
     abstract createOwnerFromId(createOwner?: OwnerIdInput): Owner | Promise<Owner>;
 
     abstract createCatSanctuary(createPetSanctuaryInput?: CreatePetSanctuaryInput): PetSanctuary | Promise<PetSanctuary>;
 
-    abstract createAddress(addressInput?: AddressInput): Address | Promise<Address>;
+    abstract createAddress(addressInput: AddressInput): Address | Promise<Address>;
+
+    abstract removeAddress(id: string): Address | Promise<Address>;
+
+    abstract updateAddress(id: string, updateAddress: AddressUpdateInput): Address | Promise<Address>;
 
     abstract unOwnCat(senctuaryId: string, ownerId: string, catId: string): PetSanctuary | Promise<PetSanctuary>;
 }
@@ -142,7 +161,14 @@ export class Owner {
     name: string;
     address: Address[];
     birthdate?: DateTime;
-    cats: Cat[];
+    cats?: Cat[];
+}
+
+export class Person {
+    id: string;
+    name: string;
+    address: Address[];
+    birthdate?: DateTime;
 }
 
 export class PetSanctuary {
@@ -153,6 +179,12 @@ export class PetSanctuary {
 }
 
 export abstract class IQuery {
+    abstract addresses(queryInput?: AddressQueryInput): Address[] | Promise<Address[]>;
+
+    abstract people(personInput?: PersonInput): Owner[] | Promise<Owner[]>;
+
+    abstract person(id: string): Owner | Promise<Owner>;
+
     abstract cats(): Cat[] | Promise<Cat[]>;
 
     abstract cat(id: string): Cat | Promise<Cat>;
@@ -161,7 +193,7 @@ export abstract class IQuery {
 
     abstract catsWithoutOwners(): CatOwnerRange[] | Promise<CatOwnerRange[]>;
 
-    abstract catOwners(): CatOwnerRange[] | Promise<CatOwnerRange[]>;
+    abstract catOwners(): Owner[] | Promise<Owner[]>;
 
     abstract catSanctuaries(): PetSanctuary[] | Promise<PetSanctuary[]>;
 }
@@ -172,6 +204,8 @@ export abstract class ISubscription {
     abstract catRemoved(): Cat | Promise<Cat>;
 
     abstract catUpdated(): Cat | Promise<Cat>;
+
+    abstract catOwnerShipChanged(): CatOwnerRange | Promise<CatOwnerRange>;
 }
 
 export type DateTime = any;
