@@ -52,7 +52,12 @@ export class CatsResolvers {
     @Args('personInput')
     personImput?: PersonInput
   ): Promise<Owner> {
-    return await this.
+    if (!personImput) {
+      return await this.ownerService.findAll();
+    } else {
+      
+      return await this.ownerService.findPeopleByList()
+    }
   }
 
   @Mutation('createCat')

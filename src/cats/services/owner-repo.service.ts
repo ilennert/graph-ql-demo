@@ -59,6 +59,7 @@ export class OwnerRepoService {
         return of(person ? retval : null);
     }
 
+    // This returns a list of people from a list of addresses
     findByAddressIdsList(addressIds: string[]): string[] {
         const personAddress = this.personAddressService.findAllByAddressIdSync(addressIds);
         return [ ...new Set(personAddress.map(pa => pa.personId)) ];
