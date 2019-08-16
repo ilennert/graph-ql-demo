@@ -14,7 +14,7 @@ type Mutation {
     createCat(createCatInput: CreateCatInput): Cat
     removeCat(id: ID!): Cat
     updateCat(id: ID!, updateCatInput: UpdateCatInput): Cat
-    createPerson(createPersonInput: CreatePersonInput): Person
+    createPerson(personInput: PersonInput): Person
     createCatOwner (createOwnerInput: CreateOwnerInput): Owner
     createOwnerFromId(createOwner: OwnerIdInput): Owner
     createCatSanctuary(createPetSanctuaryInput: CreatePetSanctuaryInput): PetSanctuary
@@ -61,7 +61,7 @@ input PetSanctuaryIdInput {
 
 input CreatePetSanctuaryInput {
     name: String!
-    addressRef: String!
+    addressRef: ID!
 }
 
 input AddressIdInput {
@@ -98,7 +98,7 @@ type Person {
 
 input PersonInput {
     name: String
-    address: AddressInput
+    address: [AddressIdInput!]!
     birthdate: DateTimeInput
 }
 
@@ -158,16 +158,9 @@ input CatIdInput {
     id: ID!
 }
 
-input CreatePersonInput {
-    name: String!
-    address: [AddressIdInput!]!
-    birthdate: DateTime
-}
-
 input CreateOwnerInput {
-    name: String!
-    address: [AddressIdInput!]!
-    birthdate: DateTime
+    ownerId: ID!
+    sanctuaryId: ID!
     cats: [CatIdInput!]!
 }
 

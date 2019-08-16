@@ -3,39 +3,71 @@ import { Injectable } from '@nestjs/common';
 import { Observable, of } from 'rxjs';
 import { Guid } from 'guid-typescript';
 
-import { CreatePersonInput, Owner, PersonInput } from '../graphql.schema';
-import { OwnerItem } from '../model/owner.model';
-import { PersonAddress } from '../model/person-address.model';
+import { CreateOwnerInput, Owner, Person, PersonInput } from '../graphql.schema';
+import { Helpers } from '../../helpers/helpers';
+import { PersonItem } from '../model/person.model';
+import { CatOwnerRangeItem, initCatOwnerRange } from '../model/cat-owner-range.model';
 import { TableManagementService } from '../services/table-management.service';
 import { AddressRepoService } from '../services/address-repo.service';
 import { CatRepoService } from '../services/cats-repo.service';
 import { PersonAddressRepoService } from '../services/person-address-repo.service';
+import { OwnerRangeRepoService } from '../services/cat-owner-range-repo.service';
 
 @Injectable()
 export class OwnerRepoService {
-    private people: OwnerItem[] = [];
+    private people: PersonItem[] = [];
     private channel: number;
 
-    create(inData: CreatePersonInput): Observable<Owner> {
-        const person: OwnerItem = {
+    create(inData: PersonInput): Observable<Person> {
+        const person: PersonItem = {
             id: Guid.create().toString(),
             name: inData.name,
-            addressRef: inData.address.map(aid => aid.id),
-            birthdate: inData.birthdate,
-            catIds: []
+            birthdate: Helpers.dateTimeInputToDate(inData.birthdate)
         };
+        inData.address
+            .map(aid => this.personAddressService.create(person.id, aid.id).subscribe());
         this.people = [ ...this.people, person ];
 
         // re-write it to the file
         // append to file
         this.tableService.writeData(this.channel, this.people);
 
+        const retval: Person = {
+            id: person.id,
+            name: person.name,
+            address: this.personAddressService.findAllByPersonIdSync(person.id)
+                .map(pa => this.addressService.findOneByIdSync(pa.addressId)),
+            birthdate: person.birthdate
+        };
+
+        return of(retval);
+    }
+
+    createCatOwner(inData: CreateOwnerInput): Observable<Owner> {
+        const person = this.people.find(p => p.id === inData.ownerId);
+
+        // NOTE FOR BELOW, THERE IS NOTHING TO WRITE FOR THIS TABLE
+        // re-write it to the file
+        // append to file
+        const now = new Date();
+        inData.cats.map(cid => {
+            const range: CatOwnerRangeItem = {
+                ...initCatOwnerRange,
+                ownerId: person.id,
+                catId: cid.id,
+                sanctuaryId: inData.sanctuaryId,
+                start: new Date(now.getTime() + (now.getTimezoneOffset() * 60000))
+            };
+            this.catOwnerRangeService.createSync(range);
+        });
+
         const retval: Owner = {
             id: person.id,
             name: person.name,
-            address: person.addressRef.map(aid => this.addressService.findOneByIdSync(aid)),
+            address: this.personAddressService.findAllByPersonIdSync(person.id)
+                .map(pa => this.addressService.findOneByIdSync(pa.addressId)),
             birthdate: person.birthdate,
-            cats: []
+            cats: [...new Set(this.catOwnerRangeService.findAllRangesByOwner(person.id).map(c => c.cat))]
         };
 
         return of(retval);
@@ -51,9 +83,10 @@ export class OwnerRepoService {
         const retval: Owner = {
             id: person.id,
             name: person.name,
-            address: person.addressRef.map(aid => this.addressService.findOneByIdSync(aid)),
+            address: this.personAddressService.findAllByPersonIdSync(person.id)
+                .map(pa => this.addressService.findOneByIdSync(pa.addressId)),
             birthdate: person.birthdate,
-            cats: person.catIds.map(cid => this.catService.findOneByIdSync(cid))
+            cats: [...new Set(this.catOwnerRangeService.findAllRangesByOwner(person.id).map(c => c.cat))]
         };
 
         return of(person ? retval : null);
@@ -71,23 +104,36 @@ export class OwnerRepoService {
             const retval: Owner = {
                 id: p.id,
                 name: p.name,
-                address: p.addressRef.map(aid => this.addressService.findOneByIdSync(aid)),
+                address: this.personAddressService.findAllByPersonIdSync(p.id)
+                    .map(pa => this.addressService.findOneByIdSync(pa.addressId)),
                 birthdate: p.birthdate,
-                cats: p.catIds.map(cid => this.catService.findOneByIdSync(cid))
+                cats: [...new Set(this.catOwnerRangeService.findAllRangesByOwner(p.id).map(c => c.cat))]
             };
             return retval;
         }));
     }
 
-    findPeopleByList(ids: string[]): Observable<Owner[]> {
-        return of(this.people.filter(p => ids.some(id => p.id === id))
+    findPeopleFromListAndInput(peopleIdsList?: string[], personInput?: Partial<PersonInput>): string[] {
+        return this.people.filter(po => !peopleIdsList || peopleIdsList.some(id => po.id === id))
+            .filter(po => {
+                let flag = !!personInput;
+                if (flag && personInput.name) {
+                    flag = Helpers.testpattern(po.name, personInput.name);
+                }
+                return flag;
+            }).map(oi => oi.id);
+    }
+
+    findPeopleByList(ids?: string[]): Observable<Owner[]> {
+        return of(this.people.filter(p => !ids || ids.some(id => p.id === id))
             .map(person => {
                 return {
                     id: person.id,
                     name: person.name,
-                    address: person.addressRef.map(aid => this.addressService.findOneByIdSync(aid)),
+                    address: this.personAddressService.findAllByPersonIdSync(person.id)
+                        .map(pa => this.addressService.findOneByIdSync(pa.addressId)),
                     birthdate: person.birthdate,
-                    cats: person.catIds.map(cid => this.catService.findOneByIdSync(cid))
+                    cats: [...new Set(this.catOwnerRangeService.findAllRangesByOwner(person.id).map(c => c.cat))]
                 };
             }));
     }
@@ -97,9 +143,10 @@ export class OwnerRepoService {
         return of({
             id: person.id,
             name: person.name,
-            address: person.addressRef.map(aid => this.addressService.findOneByIdSync(aid)),
+            address: this.personAddressService.findAllByPersonIdSync(person.id)
+                .map(pa => this.addressService.findOneByIdSync(pa.addressId)),
             birthdate: person.birthdate,
-            cats: person.catIds.map(cid => this.catService.findOneByIdSync(cid))
+            cats: [...new Set(this.catOwnerRangeService.findAllRangesByOwner(person.id).map(c => c.cat))]
         });
     }
 
@@ -108,9 +155,10 @@ export class OwnerRepoService {
         return {
             id: person.id,
             name: person.name,
-            address: person.addressRef.map(aid => this.addressService.findOneByIdSync(aid)),
+            address: this.personAddressService.findAllByPersonIdSync(person.id)
+                .map(pa => this.addressService.findOneByIdSync(pa.addressId)),
             birthdate: person.birthdate,
-            cats: person.catIds.map(cid => this.catService.findOneByIdSync(cid))
+            cats: [...new Set(this.catOwnerRangeService.findAllRangesByOwner(person.id).map(c => c.cat))]
         };
     }
 
@@ -119,7 +167,7 @@ export class OwnerRepoService {
         if (!person) {
             return of(null);
         }
-        const changedOwnerItem: OwnerItem = {
+        const changedOwnerItem: PersonItem = {
             ...person,
             ...update
         };
@@ -130,11 +178,12 @@ export class OwnerRepoService {
             return el;
         });
         const changedOwner: Owner = {
-            id: changedOwnerItem.id,
-            name: changedOwnerItem.name,
-            address: changedOwnerItem.addressRef.map(aid => this.addressService.findOneByIdSync(aid)),
-            birthdate: changedOwnerItem.birthdate,
-            cats: changedOwnerItem.catIds.map(cid => this.catService.findOneByIdSync(cid))
+            id: person.id,
+            name: person.name,
+            address: this.personAddressService.findAllByPersonIdSync(person.id)
+                .map(pa => this.addressService.findOneByIdSync(pa.addressId)),
+            birthdate: person.birthdate,
+            cats: [...new Set(this.catOwnerRangeService.findAllRangesByOwner(person.id).map(c => c.cat))]
         };
         // re-write the list with the object that has been updated
         // same as remove
@@ -145,7 +194,8 @@ export class OwnerRepoService {
     constructor(private readonly tableService: TableManagementService,
                 private readonly addressService: AddressRepoService,
                 private readonly catService: CatRepoService,
-                private readonly personAddressService: PersonAddressRepoService) {
+                private readonly personAddressService: PersonAddressRepoService,
+                private readonly catOwnerRangeService: OwnerRangeRepoService) {
         this.channel = this.tableService.tableChannel('data/owner.json');
         this.people = this.tableService.readData(this.channel);
     }

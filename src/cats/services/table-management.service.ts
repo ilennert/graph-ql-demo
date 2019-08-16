@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 
+import { Helpers } from '../../helpers/helpers';
+
 @Injectable()
 export class TableManagementService {
     private channel: string[] = [];
@@ -19,7 +21,7 @@ export class TableManagementService {
             fileContents = fs.readFileSync(this.channel[tableChan], 'utf-8');
         } catch (err) {
             if (err.code === 'ENOENT') {
-                this.log(`File not found! ${this.channel[tableChan]}`);
+                Helpers.log(`File not found! ${this.channel[tableChan]}`);
                 return [];
             } else {
                 throw err;
@@ -31,10 +33,5 @@ export class TableManagementService {
     public writeData(tableChan: number, obj: any): void {
         const stringify = JSON.stringify(obj);
         fs.writeFileSync(this.channel[tableChan], stringify, 'utf-8');
-    }
-
-    private log(...arg: any[]): void {
-        // tslint:disable-next-line: no-console
-        console.log(arg);
     }
 }

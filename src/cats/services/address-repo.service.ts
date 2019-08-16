@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { Guid } from 'guid-typescript';
 
 import { Address, AddressInput } from '../graphql.schema';
+import { Helpers } from '../../helpers/helpers';
 import { initAddress } from '../model/address.model';
 import { TableManagementService } from '../services/table-management.service';
 
@@ -48,26 +49,45 @@ export class AddressRepoService {
             const result = this.addresses.filter(adr => {
                 let flag = true;
                 if (flag && addressInput.street) {
-                    flag = this.testpattern(adr.street, addressInput.street);
+                    flag = Helpers.testpattern(adr.street, addressInput.street);
                 }
                 if (flag && addressInput.city) {
-                    flag = this.testpattern(adr.city, addressInput.city);
+                    flag = Helpers.testpattern(adr.city, addressInput.city);
                 }
                 if (flag && addressInput.stateProv) {
-                    flag = this.testpattern(adr.stateProv, addressInput.stateProv);
+                    flag = Helpers.testpattern(adr.stateProv, addressInput.stateProv);
                 }
                 if (flag && addressInput.zipPostal) {
-                    flag = this.testpattern(adr.zipPostal, addressInput.zipPostal);
+                    flag = Helpers.testpattern(adr.zipPostal, addressInput.zipPostal);
                 }
-                if (flag) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return flag;
             });
             return of(result);
         }
         return of(this.addresses);
+    }
+
+    findByInputSync(addressInput?: Partial<AddressInput>): Address[] {
+        if (addressInput) {
+            const result = this.addresses.filter(adr => {
+                let flag = true;
+                if (flag && addressInput.street) {
+                    flag = Helpers.testpattern(adr.street, addressInput.street);
+                }
+                if (flag && addressInput.city) {
+                    flag = Helpers.testpattern(adr.city, addressInput.city);
+                }
+                if (flag && addressInput.stateProv) {
+                    flag = Helpers.testpattern(adr.stateProv, addressInput.stateProv);
+                }
+                if (flag && addressInput.zipPostal) {
+                    flag = Helpers.testpattern(adr.zipPostal, addressInput.zipPostal);
+                }
+                return flag;
+            });
+            return result;
+        }
+        return this.addresses;
     }
 
     findOneById(id: string): Observable<Address> {
@@ -102,25 +122,5 @@ export class AddressRepoService {
     constructor(private readonly tableService: TableManagementService) {
         this.channel = this.tableService.tableChannel('data/addresses.json');
         this.addresses = this.tableService.readData(this.channel);
-    }
-
-    private testpattern(source: string, pattern: string): boolean {
-        source = source.toLocaleLowerCase();
-        pattern = pattern.toLocaleLowerCase();
-        if (pattern.length > 1) {
-            const swt = pattern[0];
-            pattern = pattern.substring(1);
-            switch (swt) {
-                case '%':   // contains
-                    return source.indexOf(pattern) > -1;
-                case '>':   // begins with
-                    return source.startsWith(pattern);
-                case '<':   // ends with
-                    return source.endsWith(pattern);
-                default:
-                    return source === (swt + pattern);
-            }
-        }
-        return source === pattern;
     }
 }

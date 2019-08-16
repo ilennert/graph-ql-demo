@@ -9,6 +9,9 @@ import {
   AddressQueryInput,
   AddressUpdateInput,
   Cat,
+  CreateOwnerInput,
+  Owner,
+  Person,
   PersonInput} from './graphql.schema';
 import { CatsGuard } from './cats.guard';
 import { AddressRepoService } from './services/address-repo.service';
@@ -50,14 +53,27 @@ export class CatsResolvers {
   @Query('people')
   async people(
     @Args('personInput')
-    personImput?: PersonInput
-  ): Promise<Owner> {
-    if (!personImput) {
-      return await this.ownerService.findAll();
+    personInput?: PersonInput
+  ): Promise<Owner[]> {
+    if (!personInput) {
+      return await this.ownerService.findAll().toPromise();
     } else {
-      
-      return await this.ownerService.findPeopleByList()
+      let addressLst: string[];
+      let peopleList: string[];
+      if (personInput.address) {
+        addressLst = personInput.address.map(a => a.id);
+        peopleList = this.ownerService.findByAddressIdsList(addressLst);
+        peopleList = peopleList && peopleList.length === 0 ? undefined : peopleList;
+      }
+      return await this.ownerService.findPeopleByList(
+        this.ownerService.findPeopleFromListAndInput(peopleList, personInput)
+        ).toPromise();
     }
+  }
+
+  @Query('person')
+  async person(@Args('id') id: string): Promise<Owner> {
+    return await this.ownerService.findOneById(id).toPromise();
   }
 
   @Mutation('createCat')
@@ -99,6 +115,20 @@ export class CatsResolvers {
   ): Promise<Address> {
     return await this.addressService.update(id, updateAddress).toPromise();
   }
+
+  @Mutation('createPerson')
+  async createPerson(
+    @Args('personInput') personInput: PersonInput
+  ): Promise<Person> {
+    return await this.ownerService.create(personInput).toPromise();
+  }
+
+  @Mutation('createCatOwner')
+  async createCatOwner(
+    @Args('createOwnerInput') createOwnerInput: CreateOwnerInput
+  ): Promise<Owner> {
+  return await this.createCatOwner
+}
 
   @Subscription('catCreated')
   catCreated() {

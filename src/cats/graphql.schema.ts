@@ -50,16 +50,9 @@ export class CreateCatInput {
 }
 
 export class CreateOwnerInput {
-    name: string;
-    address: AddressIdInput[];
-    birthdate?: DateTime;
+    ownerId: string;
+    sanctuaryId: string;
     cats: CatIdInput[];
-}
-
-export class CreatePersonInput {
-    name: string;
-    address: AddressIdInput[];
-    birthdate?: DateTime;
 }
 
 export class CreatePetSanctuaryInput {
@@ -94,7 +87,7 @@ export class OwnerUpdateInput {
 
 export class PersonInput {
     name?: string;
-    address?: AddressInput;
+    address: AddressIdInput[];
     birthdate?: DateTimeInput;
 }
 
@@ -139,7 +132,7 @@ export abstract class IMutation {
 
     abstract updateCat(id: string, updateCatInput?: UpdateCatInput): Cat | Promise<Cat>;
 
-    abstract createPerson(createPersonInput?: CreatePersonInput): Person | Promise<Person>;
+    abstract createPerson(personInput?: PersonInput): Person | Promise<Person>;
 
     abstract createCatOwner(createOwnerInput?: CreateOwnerInput): Owner | Promise<Owner>;
 

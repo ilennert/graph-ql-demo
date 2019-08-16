@@ -8,41 +8,48 @@ import { TableManagementService } from '../services/table-management.service';
 import { CatRepoService } from '../services/cats-repo.service';
 import { OwnerRepoService } from '../services/owner-repo.service';
 import { SanctuaryRepoService } from '../services/sanctuary-repo.service';
-import { CatOwnerRangeItem } from '../model/cat-owner-range.model';
+import { CatOwnerRangeItem, initCatOwnerRange } from '../model/cat-owner-range.model';
 
 @Injectable()
 export class OwnerRangeRepoService {
     private catRanges: CatOwnerRangeItem[] = [];
     private channel: number;
 
-    create(inData: CatOwnerRangeInput): Observable<CatOwnerRange> {
-        const range: CatOwnerRangeItem = {
+    createSync(inData: CatOwnerRangeItem): CatOwnerRange {
+        inData = {
+            ...initCatOwnerRange,
             id: Guid.create().toString(),
             ownerId: inData.ownerId,
             catId: inData.catId,
             sanctuaryId: inData.sanctuaryId,
-            start: this.dateTimeHelper(inData.start),
-            end: this.dateTimeHelper(inData.end)
+            start: inData.start,
+            end: inData.end
         };
-        this.catRanges = [ ...this.catRanges, range ];
+        // Run checks for a valid owner-range connection
+        // THIS IS IMPORTANT!
+        this.catRanges = [ ...this.catRanges, inData ];
 
         // re-write it to the file
         // append to file
         this.tableService.writeData(this.channel, this.catRanges);
 
         const retval: CatOwnerRange = {
-            id: range.id,
-            cat: this.catService.findOneByIdSync(range.catId),
-            owner: range.ownerId ? this.ownerService.findOneByIdSync(range.ownerId) : undefined,
-            sanctuary: range.sanctuaryId ? this.sanctuaryService.findOneByIdSync(range.sanctuaryId) : undefined,
-            start: range.start.toString(),
-            end: range.end ? range.end.toString() : undefined
+            id: inData.id,
+            cat: this.catService.findOneByIdSync(inData.catId),
+            owner: inData.ownerId ? this.ownerService.findOneByIdSync(inData.ownerId) : undefined,
+            sanctuary: inData.sanctuaryId ? this.sanctuaryService.findOneByIdSync(inData.sanctuaryId) : undefined,
+            start: inData.start.toString(),
+            end: inData.end ? inData.end.toString() : undefined
         };
 
-        return of(retval);
+        return retval;
     }
 
-    remove(id: string): Observable<CatOwnerRange> {
+    create(inData: CatOwnerRangeItem): Observable<CatOwnerRange> {
+        return of(this.createSync(inData));
+    }
+
+    removeSync(id: string): CatOwnerRange {
         const range = this.catRanges.find(p => p.id === id);
         this.catRanges = this.catRanges.filter(p => p.id !== id);
         // re-write the list without the object that has been removed
@@ -58,7 +65,11 @@ export class OwnerRangeRepoService {
             end: range.end ? range.end.toString() : undefined
         };
 
-        return of(range ? retval : null);
+        return range ? retval : null;
+    }
+
+    remove(id: string): Observable<CatOwnerRange> {
+        return of(this.removeSync(id));
     }
 
     findAll(limit?: number): Observable<CatOwnerRange[]> {
@@ -134,15 +145,7 @@ export class OwnerRangeRepoService {
     }
 
     findOneById(id: string): Observable<CatOwnerRange> {
-        const range = this.catRanges.find(p => p.id === id);
-        return of({
-            id: range.id,
-            cat: this.catService.findOneByIdSync(range.catId),
-            owner: range.ownerId ? this.ownerService.findOneByIdSync(range.ownerId) : undefined,
-            sanctuary: range.sanctuaryId ? this.sanctuaryService.findOneByIdSync(range.sanctuaryId) : undefined,
-            start: range.start.toString(),
-            end: range.end ? range.end.toString() : undefined
-    });
+        return of(this.findOneByIdSync(id));
     }
 
     findOneByIdSync(id: string): CatOwnerRange {
@@ -158,9 +161,13 @@ export class OwnerRangeRepoService {
     }
 
     update(id: string, update: Partial<CatOwnerRange>): Observable<CatOwnerRange> {
+        return of(this.updateSync(id, update));
+    }
+
+    updateSync(id: string, update: Partial<CatOwnerRange>): CatOwnerRange {
         const range = this.catRanges.find(a => a.id === id);
         if (!range) {
-            return of(null);
+            return null;
         }
         const changedCatOwnerRangeItem: CatOwnerRangeItem = {
             ...range,
@@ -187,7 +194,7 @@ export class OwnerRangeRepoService {
         // re-write the list with the object that has been updated
         // same as remove
         this.tableService.writeData(this.channel, this.catRanges);
-        return of(changedOwner);
+        return changedOwner;
     }
 
     constructor(private readonly tableService: TableManagementService,
