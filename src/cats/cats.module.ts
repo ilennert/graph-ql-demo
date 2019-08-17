@@ -24,14 +24,13 @@ import { CatsResolvers } from './cats.resolvers';
         CatRepoService,
         TableManagementService,
         CatsResolvers,
-        OwnerRangeRepoService,
         OwnerRepoService,
+        OwnerRangeRepoService,
         PersonAddressRepoService,
         SanctuaryRepoService,
         AddressRepoService ],
     exports: [
         CatRepoService,
-        OwnerRangeRepoService,
         TableManagementService ],
     controllers: [ CatsController ]
 })

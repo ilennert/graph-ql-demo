@@ -2,6 +2,7 @@
 import { ParseIntPipe, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
+import { map } from 'rxjs/operators';
 
 import {
   Address,
@@ -17,6 +18,7 @@ import { CatsGuard } from './cats.guard';
 import { AddressRepoService } from './services/address-repo.service';
 import { CatRepoService } from './services/cats-repo.service';
 import { OwnerRepoService } from './services/owner-repo.service';
+import { PersonAddressRepoService } from './services/person-address-repo.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 
 const pubSub = new PubSub();
@@ -25,7 +27,8 @@ const pubSub = new PubSub();
 export class CatsResolvers {
   constructor(private readonly catsService: CatRepoService,
               private readonly addressService: AddressRepoService,
-              private readonly ownerService: OwnerRepoService) {
+              private readonly ownerService: OwnerRepoService,
+              private readonly personAddressService: PersonAddressRepoService) {
   }
 
   @Query()
@@ -62,11 +65,11 @@ export class CatsResolvers {
       let peopleList: string[];
       if (personInput.address) {
         addressLst = personInput.address.map(a => a.id);
-        peopleList = this.ownerService.findByAddressIdsList(addressLst);
+        peopleList = this.ownerService.findByAddressIdsListSync(addressLst);
         peopleList = peopleList && peopleList.length === 0 ? undefined : peopleList;
       }
       return await this.ownerService.findPeopleByList(
-        this.ownerService.findPeopleFromListAndInput(peopleList, personInput)
+        this.ownerService.findPeopleFromListAndInputSync(peopleList, personInput)
         ).toPromise();
     }
   }
@@ -127,8 +130,28 @@ export class CatsResolvers {
   async createCatOwner(
     @Args('createOwnerInput') createOwnerInput: CreateOwnerInput
   ): Promise<Owner> {
-  return await this.createCatOwner
-}
+    return await this.ownerService.createCatOwner(createOwnerInput).toPromise();
+  }
+
+  @Mutation('createPersonAddress')
+  async createPersonAddress(
+    @Args('personId') personId: string,
+    @Args('addressId') addressId: string
+  ): Promise<Owner> {
+    const personAddress = this.personAddressService.createSync(personId, addressId);
+    return await this.ownerService.findOneById(personAddress.personId).toPromise();
+  }
+
+  @Mutation('removePersonAddress')
+  async removePersonAddress(
+    @Args('personId') personId: string,
+    @Args('addressId') addressId: string
+  ): Promise<Owner> {
+    return await this.personAddressService.remove(personId, addressId)
+      .pipe(map(pa => {
+        return this.ownerService.findOneById(pa.personId).toPromise();
+      })).toPromise();
+  }
 
   @Subscription('catCreated')
   catCreated() {

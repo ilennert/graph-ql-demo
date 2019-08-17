@@ -48,7 +48,7 @@ export class Helpers {
                             dateTimeInput.minute,
                             dateTimeInput.second,
                             dateTimeInput.millisecond
-                        )
+                        );
                     }
                 }
                 return new Date(dateTimeInput.year, dateTimeInput.month - 1, dateTimeInput.day);

@@ -15,12 +15,15 @@ type Mutation {
     removeCat(id: ID!): Cat
     updateCat(id: ID!, updateCatInput: UpdateCatInput): Cat
     createPerson(personInput: PersonInput): Person
+    removePerson(id: ID!): Owner
     createCatOwner (createOwnerInput: CreateOwnerInput): Owner
     createOwnerFromId(createOwner: OwnerIdInput): Owner
     createCatSanctuary(createPetSanctuaryInput: CreatePetSanctuaryInput): PetSanctuary
     createAddress(addressInput: AddressInput!): Address
     removeAddress(id: ID!): Address
     updateAddress(id: ID!, updateAddress: AddressUpdateInput!): Address
+    createPersonAddress(personId: ID!, addressId: ID!): Owner
+    removePersonAddress(personId: ID!, addressId: ID!): Owner
     unOwnCat(senctuaryId: ID!, ownerId: ID!, catId: ID!): PetSanctuary
 }
 

@@ -134,6 +134,8 @@ export abstract class IMutation {
 
     abstract createPerson(personInput?: PersonInput): Person | Promise<Person>;
 
+    abstract removePerson(id: string): Owner | Promise<Owner>;
+
     abstract createCatOwner(createOwnerInput?: CreateOwnerInput): Owner | Promise<Owner>;
 
     abstract createOwnerFromId(createOwner?: OwnerIdInput): Owner | Promise<Owner>;
@@ -145,6 +147,10 @@ export abstract class IMutation {
     abstract removeAddress(id: string): Address | Promise<Address>;
 
     abstract updateAddress(id: string, updateAddress: AddressUpdateInput): Address | Promise<Address>;
+
+    abstract createPersonAddress(personId: string, addressId: string): Owner | Promise<Owner>;
+
+    abstract removePersonAddress(personId: string, addressId: string): Owner | Promise<Owner>;
 
     abstract unOwnCat(senctuaryId: string, ownerId: string, catId: string): PetSanctuary | Promise<PetSanctuary>;
 }

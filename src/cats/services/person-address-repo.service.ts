@@ -10,7 +10,11 @@ export class PersonAddressRepoService {
     private personAddresses: PersonAddress[] = [];
     private channel: number;
 
-    create(personId: string, addressId: string): Observable<PersonAddress> {
+    createSync(personId: string, addressId: string): PersonAddress {
+        if (this.personAddresses.find(pa => pa.personId === personId &&
+            pa.addressId === addressId)) {
+                throw new Error('Can not duplicate a PersonAddress');
+        }
         const personAddress: PersonAddress = {
             personId,
             addressId
@@ -21,17 +25,28 @@ export class PersonAddressRepoService {
         // append to file
         this.tableService.writeData(this.channel, this.personAddresses);
 
-        return of(personAddress);
+        return personAddress;
     }
 
-    remove(personId: string, addressId: string): Observable<PersonAddress> {
+    create(personId: string, addressId: string): Observable<PersonAddress> {
+        return of(this.createSync(personId, addressId));
+    }
+
+    removeSync(personId: string, addressId: string): PersonAddress {
         const personAddress = this.personAddresses.find(pa => pa.personId === personId && pa.addressId === addressId);
+        if (!personAddress) {
+            throw new Error('PersonAddress not found');
+        }
         this.personAddresses = this.personAddresses.filter(pa => pa.personId === personId && pa.addressId === addressId);
         // re-write the list without the object that has been removed
         // write complete file
         this.tableService.writeData(this.channel, this.personAddresses);
 
-        return of(personAddress ? personAddress : null);
+        return personAddress ? personAddress : null;
+    }
+
+    remove(personId: string, addressId: string): Observable<PersonAddress> {
+        return of(this.removeSync(personId, addressId));
     }
 
     findAllByPersonId(personId: string): Observable<PersonAddress[]> {
@@ -50,12 +65,15 @@ export class PersonAddressRepoService {
         } else {
             personIdsLst = [ ...personIdi ];
         }
-        let result: PersonAddress[];
-        do {
-            result = [ ...result,
-                ...this.personAddresses.filter((pa) => pa.personId === personIdsLst[i++])];
-        } while (i < personIdsLst.length);
-        return result;
+        let result: PersonAddress[] = [];
+        if (this.personAddresses && this.personAddresses.length) {
+            do {
+                result = [ ...result,
+                    ...this.personAddresses.filter((pa) => pa.personId === personIdsLst[i++])];
+            } while (i < personIdsLst.length);
+            return result;
+        }
+        return [];
     }
 
     findAllByAddressIdSync(addressIdi: string | string[]): PersonAddress[] {
