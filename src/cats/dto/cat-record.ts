@@ -1,5 +1,5 @@
 
-export class CreateCatDto {
+export class CatRecord {
     readonly id?: string;
     readonly name: string;
     readonly age: number;

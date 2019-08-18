@@ -44,30 +44,7 @@ export class AddressRepoService {
         return of(this.addresses.filter((a, i) => i < limit));
     }
 
-    findAnyByInput(addressInput?: Partial<AddressInput>): Observable<Address[]> {
-        if (addressInput) {
-            const result = this.addresses.filter(adr => {
-                let flag = true;
-                if (flag && addressInput.street) {
-                    flag = Helpers.testpattern(adr.street, addressInput.street);
-                }
-                if (flag && addressInput.city) {
-                    flag = Helpers.testpattern(adr.city, addressInput.city);
-                }
-                if (flag && addressInput.stateProv) {
-                    flag = Helpers.testpattern(adr.stateProv, addressInput.stateProv);
-                }
-                if (flag && addressInput.zipPostal) {
-                    flag = Helpers.testpattern(adr.zipPostal, addressInput.zipPostal);
-                }
-                return flag;
-            });
-            return of(result);
-        }
-        return of(this.addresses);
-    }
-
-    findByInputSync(addressInput?: Partial<AddressInput>): Address[] {
+    findAnyByInputSync(addressInput?: Partial<AddressInput>): Address[] {
         if (addressInput) {
             const result = this.addresses.filter(adr => {
                 let flag = true;
@@ -90,12 +67,16 @@ export class AddressRepoService {
         return this.addresses;
     }
 
-    findOneById(id: string): Observable<Address> {
-        return of(this.addresses.find(a => a.id === id));
+    findAnyByInput(addressInput?: Partial<AddressInput>): Observable<Address[]> {
+        return of(this.findAnyByInputSync(addressInput));
     }
 
     findOneByIdSync(id: string): Address {
         return this.addresses.find(a => a.id === id);
+    }
+
+    findOneById(id: string): Observable<Address> {
+        return of(this.findOneByIdSync(id));
     }
 
     update(id: string, update: Partial<Address>): Observable<Address> {

@@ -1,7 +1,7 @@
 import { Controller, Get, Query, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
-import { CreateCatDto } from './dto';
+import { CatRecord } from './dto';
 import { Cat } from './graphql.schema';
 import { ListAllEntities } from './model';
 import { CatRepoService } from './services/cats-repo.service';
@@ -9,7 +9,7 @@ import { CatRepoService } from './services/cats-repo.service';
 @Controller('cats')
 export class CatsController {
     @Post()
-    create(@Body() createCatDto: CreateCatDto): Observable<Cat> {
+    create(@Body() createCatDto: CatRecord): Observable<Cat> {
 
         return this.service.create(createCatDto);  // 'This action adds a new cat';
     }

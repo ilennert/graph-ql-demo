@@ -7,20 +7,20 @@ import { SanctuaryModel } from '../model/sanctuary.model';
 import { PetSanctuary } from '../graphql.schema';
 import { CreatePetSanctuaryInput } from '../graphql.schema';
 import { TableManagementService } from '../services/table-management.service';
-import { AddressRepoService } from '../services/address-repo.service';
-import { CatRepoService } from '../services/cats-repo.service';
+// import { AddressRepoService } from '../services/address-repo.service';
+// import { CatRepoService } from '../services/cats-repo.service';
+// import { OwnerRangeRepoService } from '../services/cat-owner-range-repo.service';
 
 @Injectable()
 export class SanctuaryRepoService {
     private sanctuaries: SanctuaryModel[] = [];
     private channel: number;
 
-    create(inData: CreatePetSanctuaryInput): Observable<PetSanctuary> {
+    createSync(inData: CreatePetSanctuaryInput): SanctuaryModel {
         const sanctuary: SanctuaryModel = {
             id: Guid.create().toString(),
             name: inData.name,
-            addressRef: inData.addressRef,
-            catInventoryRef: []
+            addressId: inData.addressId
         };
         this.sanctuaries = [ ...this.sanctuaries, sanctuary ];
 
@@ -28,80 +28,58 @@ export class SanctuaryRepoService {
         // append to file
         this.tableService.writeData(this.channel, this.sanctuaries);
 
-        const retval: PetSanctuary = {
-            id: sanctuary.id,
-            name: sanctuary.name,
-            address: this.addressService.findOneByIdSync(sanctuary.addressRef),
-            catInventory: []
-        };
+        // const retval: PetSanctuary = {
+        //     id: sanctuary.id,
+        //     name: sanctuary.name,
+        //     address: this.addressService.findOneByIdSync(sanctuary.addressId),
+        //     catInventory: []
+        // };
 
-        return of(retval);
+        return sanctuary;
     }
 
-    remove(id: string): Observable<PetSanctuary> {
+    create(inData: CreatePetSanctuaryInput): Observable<SanctuaryModel> {
+        return of(this.createSync(inData));
+    }
+
+    removeSync(id: string): SanctuaryModel {
         const sanctuary = this.sanctuaries.find(s => s.id === id);
-        const retval: PetSanctuary = {
-            id: sanctuary.id,
-            name: sanctuary.name,
-            address: this.addressService.findOneByIdSync(sanctuary.addressRef),
-            catInventory: sanctuary.catInventoryRef.map(cid => this.catService.findOneByIdSync(cid))
-        };
         this.sanctuaries = this.sanctuaries.filter(s => s.id !== id);
         // re-write the list without the object that has been removed
         // write complete file
         this.tableService.writeData(this.channel, this.sanctuaries);
-        return of(retval);
+        return sanctuary;
     }
 
-    findAll(limit?: number): Observable<PetSanctuary[]> {
+    remove(id: string): Observable<SanctuaryModel> {
+        return of(this.removeSync(id));
+    }
+
+    findAllSync(limit?: number): SanctuaryModel[] {
         limit = !limit ? this.sanctuaries.length : limit;
-        return of(this.sanctuaries.filter((s, i) => i < limit).map(s => {
-            const retval: PetSanctuary = {
-                id: s.id,
-                name: s.name,
-                address: this.addressService.findOneByIdSync(s.addressRef),
-                catInventory: s.catInventoryRef.map(cid => this.catService.findOneByIdSync(cid))
-            };
-            return retval;
-        }));
+        return this.sanctuaries.filter((s, i) => i < limit);
     }
 
-    findOneById(id: string): Observable<PetSanctuary> {
-        const sanctuary = this.sanctuaries.find(c => c.id === id);
-        const retval: PetSanctuary = {
-            id: sanctuary.id,
-            name: sanctuary.name,
-            address: this.addressService.findOneByIdSync(sanctuary.addressRef),
-            catInventory: sanctuary.catInventoryRef.map(cid => this.catService.findOneByIdSync(cid))
-        };
-        return of(retval);
+    findAll(limit?: number): Observable<SanctuaryModel[]> {
+        return of(this.findAllSync(limit));
     }
 
-    findOneByIdSync(id: string): PetSanctuary {
-        const sanctuary = this.sanctuaries.find(c => c.id === id);
-        const retval: PetSanctuary = {
-            id: sanctuary.id,
-            name: sanctuary.name,
-            address: this.addressService.findOneByIdSync(sanctuary.addressRef),
-            catInventory: sanctuary.catInventoryRef.map(cid => this.catService.findOneByIdSync(cid))
-        };
-        return retval;
+    findOneByIdSync(id: string): SanctuaryModel {
+        return this.sanctuaries.find(c => c.id === id);
     }
 
-    update(id: string, update: Partial<SanctuaryModel>): Observable<PetSanctuary> {
+    findOneById(id: string): Observable<SanctuaryModel> {
+        return of(this.findOneByIdSync(id));
+    }
+
+    updateSync(id: string, update: Partial<SanctuaryModel>): SanctuaryModel {
         const sanctuary = this.sanctuaries.find(c => c.id === id);
         if (!sanctuary) {
-            return of(null);
+            return null;
         }
         const changedSanctuary: SanctuaryModel = {
             ...sanctuary,
             ...update
-        };
-        const changedPetSanctuary: PetSanctuary = {
-            id: changedSanctuary.id,
-            name: changedSanctuary.name,
-            address: this.addressService.findOneByIdSync(changedSanctuary.addressRef),
-            catInventory: changedSanctuary.catInventoryRef.map(cid => this.catService.findOneByIdSync(cid))
         };
         this.sanctuaries = this.sanctuaries.map(el => {
             if (el.id === id) {
@@ -109,15 +87,18 @@ export class SanctuaryRepoService {
             }
             return el;
         });
-        // re-write the list with the object that has been updated
-        // same as remove
         this.tableService.writeData(this.channel, this.sanctuaries);
-        return of(changedPetSanctuary);
+        return changedSanctuary;
     }
 
-    constructor(private readonly tableService: TableManagementService,
-                private readonly addressService: AddressRepoService,
-                private readonly catService: CatRepoService) {
+    update(id: string, update: Partial<SanctuaryModel>): Observable<SanctuaryModel> {
+        return of(this.updateSync(id, update));
+    }
+
+    constructor(private readonly tableService: TableManagementService) {
+                // private readonly addressService: AddressRepoService,
+                // private readonly catService: CatRepoService,
+                // private readonly catOwnerRangeService: OwnerRangeRepoService) {
         this.channel = this.tableService.tableChannel('data/santuaries.json');
         this.sanctuaries = this.tableService.readData(this.channel);
     }

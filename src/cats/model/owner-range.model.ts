@@ -1,8 +1,9 @@
 
 export class OwnerRange {
+    id: string;
     ownerId?: string;
     catId: string;
-    lastSanctuaryId: string;
+    sanctuaryId?: string;
     start: Date;
     end?: Date;
 }

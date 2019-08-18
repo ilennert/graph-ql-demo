@@ -40,7 +40,7 @@ type Cat {
     name: String!
     age: Float!
     breed: String!
-    # owners: [CatOwnerRange]!
+    owners: [CatOwnerRange!]!
 }
 
 type Address {
@@ -64,7 +64,7 @@ input PetSanctuaryIdInput {
 
 input CreatePetSanctuaryInput {
     name: String!
-    addressRef: ID!
+    addressId: ID!
 }
 
 input AddressIdInput {
@@ -115,11 +115,31 @@ type Owner {
 
 type CatOwnerRange {
     id: ID!
-    cat: Cat!
-    owner: Owner
-    sanctuary: PetSanctuary
+    cat: CatNHistory!
+    owner: OwnerNHistory
+    sanctuary: PetSanctuaryNHistory
     start: DateTime!
     end: DateTime
+}
+
+type CatNHistory {
+    id: String!
+    name: String!
+    age: Float!
+    breed: String!
+}
+
+type OwnerNHistory {
+    id: ID!
+    name: String!
+    address: [Address!]!
+    birthdate: DateTime
+}
+
+type PetSanctuaryNHistory {
+    id: ID!
+    name: String!
+    address: Address!
 }
 
 input DateTimeInput {

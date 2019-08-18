@@ -35,7 +35,7 @@ export class OwnerRepoService {
         const retval: Person = {
             id: person.id,
             name: person.name,
-            address: this.personAddressService.findAllByPersonIdSync(person.id)
+            address: this.personAddressService.findAllByPersonIdsSync(person.id)
                 .map(pa => this.addressService.findOneByIdSync(pa.addressId)),
             birthdate: person.birthdate
         };
@@ -68,7 +68,7 @@ export class OwnerRepoService {
         const retval: Owner = {
             id: person.id,
             name: person.name,
-            address: this.personAddressService.findAllByPersonIdSync(person.id)
+            address: this.personAddressService.findAllByPersonIdsSync(person.id)
                 .map(pa => this.addressService.findOneByIdSync(pa.addressId)),
             birthdate: person.birthdate,
             cats: [...new Set(this.catOwnerRangeService.findAllRangesByOwner(person.id).map(c => c.cat))]
@@ -91,7 +91,7 @@ export class OwnerRepoService {
         const retval: Owner = {
             id: person.id,
             name: person.name,
-            address: this.personAddressService.findAllByPersonIdSync(person.id)
+            address: this.personAddressService.findAllByPersonIdsSync(person.id)
                 .map(pa => this.addressService.findOneByIdSync(pa.addressId)),
             birthdate: person.birthdate,
             cats: [...new Set(this.catOwnerRangeService.findAllRangesByOwner(person.id).map(c => c.cat))]
@@ -106,7 +106,7 @@ export class OwnerRepoService {
 
     // This returns a list of people from a list of addresses
     findByAddressIdsListSync(addressIds: string[]): string[] {
-        const personAddress = this.personAddressService.findAllByAddressIdSync(addressIds);
+        const personAddress = this.personAddressService.findAllByAddressIdsSync(addressIds);
         return [ ...new Set(personAddress.map(pa => pa.personId)) ];
     }
 
@@ -116,7 +116,7 @@ export class OwnerRepoService {
             const retval: Owner = {
                 id: p.id,
                 name: p.name,
-                address: this.personAddressService.findAllByPersonIdSync(p.id)
+                address: this.personAddressService.findAllByPersonIdsSync(p.id)
                     .map(pa => this.addressService.findOneByIdSync(pa.addressId)),
                 birthdate: p.birthdate,
                 cats: [...new Set(this.catOwnerRangeService.findAllRangesByOwner(p.id).map(c => c.cat))]
@@ -154,7 +154,7 @@ export class OwnerRepoService {
                 return {
                     id: person.id,
                     name: person.name,
-                    address: this.personAddressService.findAllByPersonIdSync(person.id)
+                    address: this.personAddressService.findAllByPersonIdsSync(person.id)
                         .map(pa => this.addressService.findOneByIdSync(pa.addressId)),
                     birthdate: person.birthdate,
                     cats: [...new Set(this.catOwnerRangeService.findAllRangesByOwner(person.id).map(c => c.cat))]
@@ -171,7 +171,7 @@ export class OwnerRepoService {
         return {
             id: person.id,
             name: person.name,
-            address: this.personAddressService.findAllByPersonIdSync(person.id)
+            address: this.personAddressService.findAllByPersonIdsSync(person.id)
                 .map(pa => this.addressService.findOneByIdSync(pa.addressId)),
             birthdate: person.birthdate,
             cats: [...new Set(this.catOwnerRangeService.findAllRangesByOwner(person.id).map(c => c.cat))]
@@ -200,7 +200,7 @@ export class OwnerRepoService {
         const changedOwner: Owner = {
             id: person.id,
             name: person.name,
-            address: this.personAddressService.findAllByPersonIdSync(person.id)
+            address: this.personAddressService.findAllByPersonIdsSync(person.id)
                 .map(pa => this.addressService.findOneByIdSync(pa.addressId)),
             birthdate: person.birthdate,
             cats: [...new Set(this.catOwnerRangeService.findAllRangesByOwner(person.id).map(c => c.cat))]

@@ -37,7 +37,7 @@ export class PersonAddressRepoService {
         if (!personAddress) {
             throw new Error('PersonAddress not found');
         }
-        this.personAddresses = this.personAddresses.filter(pa => pa.personId === personId && pa.addressId === addressId);
+        this.personAddresses = this.personAddresses.filter(pa => pa.personId !== personId && pa.addressId !== addressId);
         // re-write the list without the object that has been removed
         // write complete file
         this.tableService.writeData(this.channel, this.personAddresses);
@@ -57,39 +57,24 @@ export class PersonAddressRepoService {
         return of(this.personAddresses.filter((pa) => pa.addressId === addressId));
     }
 
-    findAllByPersonIdSync(personIdi: string | string[]): PersonAddress[] {
-        let personIdsLst: string[];
-        let i = 0;
-        if (typeof personIdi === 'string') {
-            personIdsLst = [ personIdi ];
+    findAllByPersonIdsSync(personIds: string | string[]): PersonAddress[] {
+        let peopleIds: string[];
+        if (typeof personIds === 'string') {
+            peopleIds = [ personIds ];
         } else {
-            personIdsLst = [ ...personIdi ];
+            peopleIds = [ ...personIds ];
         }
-        let result: PersonAddress[] = [];
-        if (this.personAddresses && this.personAddresses.length) {
-            do {
-                result = [ ...result,
-                    ...this.personAddresses.filter((pa) => pa.personId === personIdsLst[i++])];
-            } while (i < personIdsLst.length);
-            return result;
-        }
-        return [];
+        return [ ...this.personAddresses.filter((pa) => peopleIds.some(pid => pa.personId === pid)) ];
     }
 
-    findAllByAddressIdSync(addressIdi: string | string[]): PersonAddress[] {
-        let addressIdsLst: string[];
-        let i = 0;
-        if (typeof addressIdi === 'string') {
-            addressIdsLst = [ addressIdi ];
+    findAllByAddressIdsSync(addressIds: string | string[]): PersonAddress[] {
+        let addressesIds: string[];
+        if (typeof addressIds === 'string') {
+            addressesIds = [ addressIds ];
         } else {
-            addressIdsLst = [ ...addressIdi ];
+            addressesIds = [ ...addressIds ];
         }
-        let result: PersonAddress[];
-        do {
-            result = [ ...result,
-                ...this.personAddresses.filter((pa) => pa.addressId === addressIdsLst[i++])];
-        } while (i < addressIdsLst.length);
-        return result;
+        return [ ...this.personAddresses.filter((pa) => addressesIds.some(aid => pa.addressId === aid)) ];
     }
 
     constructor(private readonly tableService: TableManagementService) {

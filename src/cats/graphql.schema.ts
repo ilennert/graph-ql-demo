@@ -57,7 +57,7 @@ export class CreateOwnerInput {
 
 export class CreatePetSanctuaryInput {
     name: string;
-    addressRef: string;
+    addressId: string;
 }
 
 export class DateTimeInput {
@@ -114,13 +114,21 @@ export class Cat {
     name: string;
     age: number;
     breed: string;
+    owners: CatOwnerRange[];
+}
+
+export class CatNHistory {
+    id: string;
+    name: string;
+    age: number;
+    breed: string;
 }
 
 export class CatOwnerRange {
     id: string;
-    cat: Cat;
-    owner?: Owner;
-    sanctuary?: PetSanctuary;
+    cat: CatNHistory;
+    owner?: OwnerNHistory;
+    sanctuary?: PetSanctuaryNHistory;
     start: DateTime;
     end?: DateTime;
 }
@@ -163,6 +171,13 @@ export class Owner {
     cats?: Cat[];
 }
 
+export class OwnerNHistory {
+    id: string;
+    name: string;
+    address: Address[];
+    birthdate?: DateTime;
+}
+
 export class Person {
     id: string;
     name: string;
@@ -175,6 +190,12 @@ export class PetSanctuary {
     name: string;
     address: Address;
     catInventory: Cat[];
+}
+
+export class PetSanctuaryNHistory {
+    id: string;
+    name: string;
+    address: Address;
 }
 
 export abstract class IQuery {

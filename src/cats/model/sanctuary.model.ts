@@ -6,8 +6,7 @@ import { initCat } from './cat.model';
 export class SanctuaryModel {
     id: string;
     name: string;
-    addressRef: string;
-    catInventoryRef: string[];
+    addressId: string;
 }
 
 export const initSanctuary: PetSanctuary = {
