@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { Guid } from 'guid-typescript';
 
 import { Address, AddressInput } from '../graphql.schema';
-import { Helpers } from '../../helpers/helpers';
+import { Helpers } from '../helpers/helpers';
 import { initAddress } from '../model/address.model';
 import { TableManagementService } from '../services/table-management.service';
 

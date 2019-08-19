@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 
-import { Helpers } from '../../helpers/helpers';
+import { Helpers } from '../helpers/helpers';
 
 @Injectable()
 export class TableManagementService {

@@ -89,7 +89,15 @@ export class OwnerRangeRepoService {
     }
 
     findAllRangesByCatSync(catId: string): CatOwnerRangeItem[] {
+        return this.catRanges.filter((cor) => cor.catId === catId);
+    }
+
+    findAllRangesByCatThatAreOwnerSync(catId: string): CatOwnerRangeItem[] {
         return this.catRanges.filter((cor) => cor.catId === catId && cor.ownerId);
+    }
+
+    findAllRangesByCatThatAreOwner(catId: string): Observable<CatOwnerRangeItem[]> {
+        return of(this.findAllRangesByCatThatAreOwnerSync(catId));
     }
 
     findAllRangesByCat(catId: string): Observable<CatOwnerRangeItem[]> {

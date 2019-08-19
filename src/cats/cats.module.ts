@@ -11,6 +11,7 @@ import { SanctuaryRepoService } from './services/sanctuary-repo.service';
 import { CatRepoService } from './services/cats-repo.service';
 import { CatsController } from './cats.controller';
 import { CatsResolvers } from './cats.resolvers';
+import { MappingService } from './helpers/mapping.service';
 
 @Module({
     imports: [
@@ -24,6 +25,7 @@ import { CatsResolvers } from './cats.resolvers';
         CatRepoService,
         TableManagementService,
         CatsResolvers,
+        MappingService,
         OwnerRepoService,
         OwnerRangeRepoService,
         PersonAddressRepoService,

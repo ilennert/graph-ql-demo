@@ -24,6 +24,7 @@ import {
 import { CatsGuard } from './cats.guard';
 import { AddressRepoService } from './services/address-repo.service';
 import { CatRepoService } from './services/cats-repo.service';
+import { MappingService } from './helpers/mapping.service';
 import { OwnerRangeRepoService } from './services/cat-owner-range-repo.service';
 import { OwnerRepoService } from './services/owner-repo.service';
 import { PersonAddressRepoService } from './services/person-address-repo.service';
@@ -37,6 +38,7 @@ const pubSub = new PubSub();
 export class CatsResolvers {
   constructor(private readonly catsService: CatRepoService,
               private readonly addressService: AddressRepoService,
+              private readonly mappingService: MappingService,
               private readonly ownerService: OwnerRepoService,
               private readonly ownerRangeService: OwnerRangeRepoService,
               private readonly personAddressService: PersonAddressRepoService,
@@ -46,7 +48,9 @@ export class CatsResolvers {
   @Query()
   @UseGuards(CatsGuard)
   async cats() {
-    return await this.catsService.findAll().toPromise();
+    return await this.catsService.findAll().pipe(
+      map(ca => ca.map(c => this.mappingService.buildCat(c.id)))
+    ).toPromise();
   }
 
   @Query('cat')
@@ -54,7 +58,9 @@ export class CatsResolvers {
     @Args('id')
     id: string
   ): Promise<Cat> {
-    return await this.catsService.findOneById(id).toPromise();
+    return await this.catsService.findOneById(id).pipe(
+      map(c => this.mappingService.buildCat(c.id))
+    ).toPromise();
   }
 
   @Query('addresses')
@@ -71,7 +77,9 @@ export class CatsResolvers {
     personInput?: PersonInput
   ): Promise<Owner[]> {
     if (!personInput) {
-      return await this.ownerService.findAll().toPromise();
+      return await this.ownerService.findAll().pipe(
+        map(pa => pa.map(p => this.mappingService.buildOwner(p.id)))
+      ).toPromise();
     } else {
       let addressLst: string[];
       let peopleList: string[];
@@ -100,14 +108,18 @@ export class CatsResolvers {
 
   @Mutation('removeCat')
   async remove(@Args('id') id: string): Promise<Cat> {
-    const removedCat = await this.catsService.remove(id).toPromise();
+    const removedCat = await this.catsService.remove(id).pipe(
+      map(c => this.mappingService.buildCat(c.id))
+    ).toPromise();
     pubSub.publish('removedCat', { catRemoved: removedCat });
     return removedCat;
   }
 
   @Mutation('updateCat')
   async update(@Args('id') id: string, @Args('updateCatInput') updateFields: Partial<Cat>): Promise<Cat> {
-    const updatedCat = await this.catsService.update(id, updateFields).toPromise();
+    const updatedCat = await this.catsService.update(id, updateFields).pipe(
+      map(c => this.mappingService.buildCat(c.id))
+    ).toPromise();
     pubSub.publish('updatedCat', { catUpdated: updatedCat });
     return updatedCat;
   }
@@ -174,18 +186,10 @@ export class CatsResolvers {
           name: s.name,
           address: this.addressService.findOneByIdSync(s.addressId),
           catInventory: this.ownerRangeService.findAllRangesBySanctuarySync(s.id).map(cor => {
-            const retval: CatOwnerRange = {
-              id: cor.id,
-              cat: this.buildCatNHistory(cor.catId),
-              owner: cor.ownerId ? this.buildOwnerNHistory(cor.ownerId) : undefined,
-              sanctuary: cor.sanctuaryId ? this.buildPetSanctuaryNHistory(cor.sanctuaryId) : undefined,
-              start: cor.start,
-              end: cor.end
-            };
-            return retval;
+            return this.mappingService.buildCat(cor.catId);
           })
         };
-        return sanctuary
+        return sanctuary;
       })
     ).toPromise();
   }
@@ -205,43 +209,4 @@ export class CatsResolvers {
     return pubSub.asyncIterator('catUpdated');
   }
 
-  private buildCatNHistory(id: string): CatNHistory {
-    const c = this.catsService.findOneByIdSync(id);
-    return {
-      id: c.id,
-      name: c.name,
-      age: c.age,
-      breed: c.breed
-    };
-  }
-
-  private buildCat(id: string): Cat {
-    const c = this.catsService.findOneByIdSync(id);
-    return {
-      id: c.id,
-      name: c.name,
-      age: c.age,
-      breed: c.breed,
-      owners: this.ownerRangeService.findAllRangesByOwnerSync(c.id)
-    };
-  }
-
-  private buildOwnerNHistory(id: string): OwnerNHistory {
-    const o = this.ownerService.findOneByIdSync(id);
-    return {
-      id: o.id,
-      name: o.name,
-      address: o.address,
-      birthdate: o.birthdate
-    };
-  }
-
-  private buildPetSanctuaryNHistory(id: string): PetSanctuaryNHistory {
-    const p = this.sanctuaryService.findOneByIdSync(id);
-    return {
-      id: p.id,
-      name: p.name,
-      address: this.addressService.findOneByIdSync(p.addressId)
-    };
-  }
 }
