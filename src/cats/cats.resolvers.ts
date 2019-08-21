@@ -205,6 +205,8 @@ export class CatsResolvers {
     ).toPromise();
   }
 
+  // @Mutation('changePetOwnership')
+
   @Subscription('catCreated')
   catCreated() {
     return pubSub.asyncIterator('catCreated');
