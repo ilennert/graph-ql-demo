@@ -160,7 +160,7 @@ export abstract class IMutation {
 
     abstract removePersonAddress(personId: string, addressId: string): Owner | Promise<Owner>;
 
-    abstract unOwnCat(senctuaryId: string, ownerId: string, catId: string): PetSanctuary | Promise<PetSanctuary>;
+    abstract changePetOwnership(senctuaryId: string, ownerId: string, catId: string): PetSanctuary | Promise<PetSanctuary>;
 }
 
 export class Owner {

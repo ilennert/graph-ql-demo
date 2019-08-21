@@ -1,7 +1,8 @@
 
-import { ParseIntPipe, UseGuards } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
+import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import {
@@ -10,17 +11,13 @@ import {
   AddressQueryInput,
   AddressUpdateInput,
   Cat,
-  CatNHistory,
-  CatOwnerRange,
   CreateCatInput,
   CreateOwnerInput,
   CreatePetSanctuaryInput,
   Owner,
-  OwnerNHistory,
   Person,
   PersonInput,
-  PetSanctuary,
-  PetSanctuaryNHistory} from './graphql.schema';
+  PetSanctuary} from './graphql.schema';
 import { CatsGuard } from './cats.guard';
 import { AddressRepoService } from './services/address-repo.service';
 import { CatRepoService } from './services/cats-repo.service';
@@ -90,21 +87,23 @@ export class CatsResolvers {
       }
       return await this.ownerService.findPeopleByList(
         this.ownerService.findPeopleFromListAndInputSync(peopleList, personInput)
-        ).toPromise();
+        ).pipe(map(pa => pa.map(p => this.mappingService.buildOwner(p.id)))).toPromise();
     }
   }
 
   @Query('person')
   async person(@Args('id') id: string): Promise<Owner> {
-    return await this.ownerService.findOneById(id).toPromise();
+    return await this.ownerService.findOneById(id).pipe(
+      map(p => this.mappingService.buildOwner(p.id))).toPromise();
   }
 
-  // @Mutation('createCat')
-  // async create(@Args('createCatInput') args: CreateCatInput): Promise<Cat> {
-  //   const createdCat = await this.catsService.create(args).toPromise();
-  //   pubSub.publish('catCreated', { catCreated: createdCat });
-  //   return createdCat;
-  // }
+  @Mutation('createCat')
+  async create(@Args('createCatInput') args: CreateCatInput): Promise<Cat> {
+    const createdCat = await this.catsService.create(args).pipe(map(c =>
+      this.mappingService.buildCat(c.id))).toPromise();
+    pubSub.publish('catCreated', { catCreated: createdCat });
+    return createdCat;
+  }
 
   @Mutation('removeCat')
   async remove(@Args('id') id: string): Promise<Cat> {
@@ -154,7 +153,19 @@ export class CatsResolvers {
   async createCatOwner(
     @Args('createOwnerInput') createOwnerInput: CreateOwnerInput
   ): Promise<Owner> {
-    return await this.ownerService.createCatOwner(createOwnerInput).toPromise();
+    const person = this.ownerService.findOneByIdSync(createOwnerInput.ownerId);
+    const now = new Date();
+    createOwnerInput.cats.map(cid => {
+        const range: CatOwnerRangeItem = {
+            ...initCatOwnerRange,
+            ownerId: person.id,
+            catId: cid.id,
+            sanctuaryId: createOwnerInput.sanctuaryId,
+            start: new Date(now.getTime() + (now.getTimezoneOffset() * 60000))
+        };
+        this.ownerRangeService.createSync(range);
+    });
+    return await of(this.mappingService.buildOwner(person.id)).toPromise();
   }
 
   @Mutation('createPersonAddress')
@@ -163,7 +174,7 @@ export class CatsResolvers {
     @Args('addressId') addressId: string
   ): Promise<Owner> {
     return await  this.personAddressService.create(personId, addressId)
-      .pipe(map(pa => this.ownerService.findOneById(pa.personId).toPromise())).toPromise();
+      .pipe(map(pa => this.mappingService.buildOwner(pa.personId))).toPromise();
   }
 
   @Mutation('removePersonAddress')
@@ -172,7 +183,7 @@ export class CatsResolvers {
     @Args('addressId') addressId: string
   ): Promise<Owner> {
     return await this.personAddressService.remove(personId, addressId)
-      .pipe(map(pa => this.ownerService.findOneById(pa.personId).toPromise())).toPromise();
+      .pipe(map(pa => this.mappingService.buildOwner(pa.personId))).toPromise();
   }
 
   @Mutation('createCatSanctuary')
