@@ -85,7 +85,7 @@ export class OwnerRangeRepoService {
     }
 
     findAllRangesBySanctuarySync(sanctuaryId: string): CatOwnerRangeItem[] {
-        return this.catRanges.filter((cor) => cor.sanctuaryId === sanctuaryId);
+        return this.catRanges.filter((cor) => cor.sanctuaryId === sanctuaryId && !cor.ownerId);
     }
 
     findAllRangesByCatSync(catId: string): CatOwnerRangeItem[] {

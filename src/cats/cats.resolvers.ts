@@ -97,6 +97,12 @@ export class CatsResolvers {
       map(p => this.mappingService.buildOwner(p.id))).toPromise();
   }
 
+  @Query('catSanctuaries')
+  async catSanctuaries(): Promise<PetSanctuary[]> {
+    return await this.sanctuaryService.findAll().pipe(
+      map(sa => sa.map(s => this.mappingService.buildPetSanctuaryObj(s)))).toPromise();
+  }
+
   @Mutation('createCat')
   async create(@Args('createCatInput') args: CreateCatInput): Promise<Cat> {
     const createdCat = await this.catsService.create(args).pipe(map(c =>
@@ -205,7 +211,26 @@ export class CatsResolvers {
     ).toPromise();
   }
 
-  // @Mutation('changePetOwnership')
+  @Mutation('changePetOwnership')
+  async changePetOwnership(
+    @Args('sanctuaryId') sanctuaryId: string,
+    @Args('catId') catId: string,
+    @Args('ownerId') ownerId?: string
+  ): Promise<PetSanctuary> {
+    const now = new Date();
+    const range: CatOwnerRangeItem = {
+      ...initCatOwnerRange,
+      ownerId,
+      catId,
+      sanctuaryId,
+      start: new Date(now.getTime() + (now.getTimezoneOffset() * 60000))
+    };
+    const sanctuary = await this.ownerRangeService.create(range).pipe(
+      map(ri => this.mappingService.buildPetSanctuary(ri.sanctuaryId))
+    ).toPromise();
+    pubSub.publish('catOwnershipChanged', { catOwnershipChanged: range });
+    return sanctuary;
+  }
 
   @Subscription('catCreated')
   catCreated() {
@@ -222,4 +247,8 @@ export class CatsResolvers {
     return pubSub.asyncIterator('catUpdated');
   }
 
+  @Subscription('catOwnershipChanged')
+  catOwnershipChanged() {
+    return pubSub.asyncIterator('catOwnershipChanged');
+  }
 }

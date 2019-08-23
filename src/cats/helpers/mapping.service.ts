@@ -144,7 +144,30 @@ export class MappingService {
     };
   }
 
-  buildCatOwnerRange(id: string): CatOwnerRange {
+  buildPetSanctuary(id: string): PetSanctuary {
+    const p = this.sanctuaryService.findOneByIdSync(id);
+    return {
+      id: p.id,
+      name: p.name,
+      address: this.addressService.findOneByIdSync(p.addressId),
+      catInventory: this.ownerRangeService.findAllRangesBySanctuarySync(p.id).map(cor => {
+        return this.buildCat(cor.catId);
+      })
+    };
+  }
+
+  buildPetSanctuaryObj(p: SanctuaryModel): PetSanctuary {
+    return {
+      id: p.id,
+      name: p.name,
+      address: this.addressService.findOneByIdSync(p.addressId),
+      catInventory: this.ownerRangeService.findAllRangesBySanctuarySync(p.id).map(cor => {
+        return this.buildCat(cor.catId);
+      })
+    };
+  }
+
+buildCatOwnerRange(id: string): CatOwnerRange {
     const r = this.ownerRangeService.findOneByIdSync(id);
     return {
       id: r.id,

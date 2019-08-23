@@ -24,14 +24,14 @@ type Mutation {
     updateAddress(id: ID!, updateAddress: AddressUpdateInput!): Address
     createPersonAddress(personId: ID!, addressId: ID!): Owner
     removePersonAddress(personId: ID!, addressId: ID!): Owner
-    changePetOwnership(senctuaryId: ID!, ownerId: ID!, catId: ID!): PetSanctuary
+    changePetOwnership(sanctuaryId: ID!, catId: ID!, ownerId: ID): PetSanctuary
 }
 
 type Subscription {
     catCreated: Cat
     catRemoved: Cat
     catUpdated: Cat
-    catOwnerShipChanged: CatOwnerRange
+    catOwnershipChanged: CatOwnerRange
 }
 scalar DateTime
 
