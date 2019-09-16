@@ -95,6 +95,13 @@ export class PetSanctuaryIdInput {
     id: string;
 }
 
+export class TransferPetInput {
+    sanctuaryId: string;
+    petId: string;
+    ownerId?: string;
+    toOwner?: boolean;
+}
+
 export class UpdateCatInput {
     name?: string;
     age?: number;
@@ -160,7 +167,7 @@ export abstract class IMutation {
 
     abstract removePersonAddress(personId: string, addressId: string): Owner | Promise<Owner>;
 
-    abstract changePetOwnership(sanctuaryId: string, catId: string, ownerId?: string): PetSanctuary | Promise<PetSanctuary>;
+    abstract changePetOwnership(transferPetInput: TransferPetInput): PetSanctuary | Promise<PetSanctuary>;
 }
 
 export class Owner {

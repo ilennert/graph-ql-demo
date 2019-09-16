@@ -17,7 +17,8 @@ import {
   Owner,
   Person,
   PersonInput,
-  PetSanctuary} from './graphql.schema';
+  PetSanctuary,
+  TransferPetInput} from './graphql.schema';
 import { CatsGuard } from './cats.guard';
 import { AddressRepoService } from './services/address-repo.service';
 import { CatRepoService } from './services/cats-repo.service';
@@ -213,16 +214,15 @@ export class CatsResolvers {
 
   @Mutation('changePetOwnership')
   async changePetOwnership(
-    @Args('sanctuaryId') sanctuaryId: string,
-    @Args('catId') catId: string,
-    @Args('ownerId') ownerId?: string
+    @Args('transferPetInput') transferPetInput: TransferPetInput
   ): Promise<PetSanctuary> {
     const now = new Date();
     const range: CatOwnerRangeItem = {
       ...initCatOwnerRange,
-      ownerId,
-      catId,
-      sanctuaryId,
+      toOwner: transferPetInput.toOwner,
+      ownerId: transferPetInput.ownerId,
+      catId: transferPetInput.petId,
+      sanctuaryId: transferPetInput.sanctuaryId,
       start: new Date(now.getTime() + (now.getTimezoneOffset() * 60000))
     };
     const sanctuary = await this.ownerRangeService.create(range).pipe(

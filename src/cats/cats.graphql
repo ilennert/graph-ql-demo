@@ -24,7 +24,7 @@ type Mutation {
     updateAddress(id: ID!, updateAddress: AddressUpdateInput!): Address
     createPersonAddress(personId: ID!, addressId: ID!): Owner
     removePersonAddress(personId: ID!, addressId: ID!): Owner
-    changePetOwnership(sanctuaryId: ID!, catId: ID!, ownerId: ID): PetSanctuary
+    changePetOwnership(transferPetInput: TransferPetInput!): PetSanctuary
 }
 
 type Subscription {
@@ -69,6 +69,12 @@ input CreatePetSanctuaryInput {
 
 input AddressIdInput {
     id: ID!
+}
+input TransferPetInput{
+    sanctuaryId: ID!
+    petId: ID!
+    ownerId: ID
+    toOwner: Boolean
 }
 
 input AddressInput {
