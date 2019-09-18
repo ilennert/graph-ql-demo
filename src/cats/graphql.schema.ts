@@ -80,14 +80,14 @@ export class OwnerIdInput {
 
 export class OwnerUpdateInput {
     name?: string;
-    address?: AddressIdInput[];
+    addresses?: AddressIdInput[];
     birthdate?: DateTime;
     cats?: CatIdInput[];
 }
 
 export class PersonInput {
     name?: string;
-    address: AddressIdInput[];
+    addresses: AddressIdInput[];
     birthdate?: DateTimeInput;
 }
 
@@ -173,7 +173,7 @@ export abstract class IMutation {
 export class Owner {
     id: string;
     name: string;
-    address: Address[];
+    addresses: Address[];
     birthdate?: DateTime;
     cats?: Cat[];
 }
@@ -181,14 +181,14 @@ export class Owner {
 export class OwnerNHistory {
     id: string;
     name: string;
-    address: Address[];
+    addresses: Address[];
     birthdate?: DateTime;
 }
 
 export class Person {
     id: string;
     name: string;
-    address: Address[];
+    addresses: Address[];
     birthdate?: DateTime;
 }
 

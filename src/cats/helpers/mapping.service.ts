@@ -76,7 +76,7 @@ export class MappingService {
     return {
       id: o.id,
       name: o.name,
-      address: this.personAddressService.findAllByPersonIdsSync(o.id)
+      addresses: this.personAddressService.findAllByPersonIdsSync(o.id)
       .map(pa => {
         const a = this.addressService.findOneByIdSync(pa.addressId);
         return {
@@ -95,7 +95,7 @@ export class MappingService {
     return {
       id: person.id,
       name: person.name,
-      address: this.personAddressService.findAllByPersonIdsSync(person.id)
+      addresses: this.personAddressService.findAllByPersonIdsSync(person.id)
       .map(pa => {
         const a = this.addressService.findOneByIdSync(pa.addressId);
         return {
@@ -114,7 +114,7 @@ export class MappingService {
     return {
       id: person.id,
       name: person.name,
-      address: aa,
+      addresses: aa,
       birthdate: person.birthdate
     };
   }
@@ -200,7 +200,7 @@ buildCatOwnerRange(id: string): CatOwnerRange {
     const retval: Owner = {
       id: o.id,
       name: o.name,
-      address: this.buildAddressesFromPerson(o),
+      addresses: this.buildAddressesFromPerson(o),
       cats: this.ownerRangeService.findAllRangesByOwnerSync(o.id)
         .map(cor => this.buildCat(cor.catId))
     };
@@ -211,7 +211,7 @@ buildCatOwnerRange(id: string): CatOwnerRange {
     return {
       id: pi.id,
       name: pi.name,
-      address: this.buildAddressesFromPerson(pi),
+      addresses: this.buildAddressesFromPerson(pi),
       cats: this.ownerRangeService.findAllRangesByOwnerSync(pi.id)
         .map(cor => this.buildCat(cor.catId))
     };

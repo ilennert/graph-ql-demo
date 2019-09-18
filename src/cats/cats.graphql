@@ -101,20 +101,20 @@ input AddressQueryInput {
 type Person {
     id: ID!
     name: String!
-    address: [Address!]!
+    addresses: [Address!]!
     birthdate: DateTime
 }
 
 input PersonInput {
     name: String
-    address: [AddressIdInput!]!
+    addresses: [AddressIdInput!]!
     birthdate: DateTimeInput
 }
 
 type Owner {
     id: ID!
     name: String!
-    address: [Address!]!
+    addresses: [Address!]!
     birthdate: DateTime
     cats: [Cat]
 }
@@ -138,7 +138,7 @@ type CatNHistory {
 type OwnerNHistory {
     id: ID!
     name: String!
-    address: [Address!]!
+    addresses: [Address!]!
     birthdate: DateTime
 }
 
@@ -199,7 +199,7 @@ input OwnerIdInput {
 
 input OwnerUpdateInput {
     name: String
-    address: [AddressIdInput]
+    addresses: [AddressIdInput]
     birthdate: DateTime
     cats: [CatIdInput]
 }

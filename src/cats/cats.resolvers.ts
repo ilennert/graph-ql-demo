@@ -81,8 +81,8 @@ export class CatsResolvers {
     } else {
       let addressLst: string[];
       let peopleList: string[];
-      if (personInput.address) {
-        addressLst = personInput.address.map(a => a.id);
+      if (personInput.addresses) {
+        addressLst = personInput.addresses.map(a => a.id);
         peopleList = this.ownerService.findByAddressIdsListSync(addressLst);
         peopleList = peopleList && peopleList.length === 0 ? undefined : peopleList;
       }

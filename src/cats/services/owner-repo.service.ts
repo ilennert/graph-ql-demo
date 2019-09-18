@@ -21,7 +21,7 @@ export class OwnerRepoService {
             name: inData.name,
             birthdate: Helpers.dateTimeInputToDate(inData.birthdate)
         };
-        inData.address
+        inData.addresses
             .map(aid => this.personAddressService.createSync(person.id, aid.id));
         this.people = [ ...this.people, person ];
 
@@ -32,7 +32,7 @@ export class OwnerRepoService {
         const retval: Person = {
             id: person.id,
             name: person.name,
-            address: this.personAddressService.findAllByPersonIdsSync(person.id)
+            addresses: this.personAddressService.findAllByPersonIdsSync(person.id)
                 .map(pa => this.addressService.findOneByIdSync(pa.addressId)),
             birthdate: person.birthdate
         };
