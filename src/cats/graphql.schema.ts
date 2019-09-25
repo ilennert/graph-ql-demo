@@ -141,21 +141,21 @@ export class CatOwnerRange {
 }
 
 export abstract class IMutation {
-    abstract createCat(createCatInput?: CreateCatInput): Cat | Promise<Cat>;
+    abstract createCat(createCatInput: CreateCatInput): Cat | Promise<Cat>;
 
     abstract removeCat(id: string): Cat | Promise<Cat>;
 
-    abstract updateCat(id: string, updateCatInput?: UpdateCatInput): Cat | Promise<Cat>;
+    abstract updateCat(id: string, updateCatInput: UpdateCatInput): Cat | Promise<Cat>;
 
-    abstract createPerson(personInput?: PersonInput): Person | Promise<Person>;
+    abstract createPerson(personInput: PersonInput): Person | Promise<Person>;
 
     abstract removePerson(id: string): Owner | Promise<Owner>;
 
-    abstract createCatOwner(createOwnerInput?: CreateOwnerInput): Owner | Promise<Owner>;
+    abstract createCatOwner(createOwnerInput: CreateOwnerInput): Owner | Promise<Owner>;
 
-    abstract createOwnerFromId(createOwner?: OwnerIdInput): Owner | Promise<Owner>;
+    abstract createOwnerFromId(createOwner: OwnerIdInput): Owner | Promise<Owner>;
 
-    abstract createCatSanctuary(createPetSanctuaryInput?: CreatePetSanctuaryInput): PetSanctuary | Promise<PetSanctuary>;
+    abstract createCatSanctuary(createPetSanctuaryInput: CreatePetSanctuaryInput): PetSanctuary | Promise<PetSanctuary>;
 
     abstract createAddress(addressInput: AddressInput): Address | Promise<Address>;
 
