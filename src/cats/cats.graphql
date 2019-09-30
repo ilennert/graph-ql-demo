@@ -106,7 +106,7 @@ type Person {
 }
 
 input PersonInput {
-    name: String
+    name: String!
     addresses: [AddressIdInput!]!
     birthdate: DateTimeInput
 }
