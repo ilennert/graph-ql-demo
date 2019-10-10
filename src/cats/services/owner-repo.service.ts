@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Observable, of } from 'rxjs';
 import { Guid } from 'guid-typescript';
 
-import { Owner, Person, PersonInput } from '../graphql.schema';
+import { Owner, Person, PersonInput, PersonQueryInput } from '../graphql.schema';
 import { Helpers } from '../helpers/helpers';
 import { PersonItem } from '../model/person.model';
 import { TableManagementService } from '../services/table-management.service';
@@ -21,7 +21,9 @@ export class OwnerRepoService {
             name: inData.name,
             birthdate: Helpers.dateTimeInputToDate(inData.birthdate)
         };
-        inData.addresses
+        const fullAddreses = inData.addresses
+            .map(address => this.addressService.createSync(address));
+        fullAddreses
             .map(aid => this.personAddressService.createSync(person.id, aid.id));
         this.people = [ ...this.people, person ];
 
@@ -64,6 +66,14 @@ export class OwnerRepoService {
         return [ ...new Set(personAddress.map(pa => pa.personId)) ];
     }
 
+    findByAddressValueSync(inData: Partial<PersonQueryInput>): string[] {
+        if (inData.addresses && inData.addresses.length) {
+            const personAddress = this.personAddressService.findByValueSync(inData.addresses[0]);
+            return [ ...new Set(personAddress.map(pa => pa.personId)) ];
+        }
+        return [];
+    }
+
     findAllSync(limit?: number): PersonItem[] {
         limit = !limit ? this.people.length : limit;
         return this.people.filter((a, i) => i < limit);     // .map(p => {
@@ -77,7 +87,7 @@ export class OwnerRepoService {
         return of(this.findByAddressIdsListSync(addressIds));
     }
 
-    findPeopleFromListAndInputSync(peopleIdsList?: string[], personInput?: Partial<PersonInput>): string[] {
+    findPeopleFromListAndInputSync(peopleIdsList?: string[], personInput?: Partial<PersonQueryInput>): string[] {
         return this.people.filter(po => !peopleIdsList || peopleIdsList.some(id => po.id === id))
             .filter(po => {
                 let flag = !!personInput;

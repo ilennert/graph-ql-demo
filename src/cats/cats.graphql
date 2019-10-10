@@ -107,7 +107,13 @@ type Person {
 
 input PersonInput {
     name: String!
-    addresses: [AddressIdInput!]!
+    addresses: [AddressInput!]!
+    birthdate: DateTimeInput
+}
+
+input PersonQueryInput {
+    name: String!
+    addresses: [AddressQueryInput]
     birthdate: DateTimeInput
 }
 

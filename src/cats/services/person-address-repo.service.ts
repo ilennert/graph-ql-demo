@@ -3,7 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { Observable, of } from 'rxjs';
 
 import { TableManagementService } from '../services/table-management.service';
+import { AddressRepoService } from '../services/address-repo.service';
 import { PersonAddress } from '../model/person-address.model';
+import { AddressQueryInput } from 'dist/src/cats/graphql.schema';
 
 @Injectable()
 export class PersonAddressRepoService {
@@ -67,6 +69,11 @@ export class PersonAddressRepoService {
         return [ ...this.personAddresses.filter((pa) => peopleIds.some(pid => pa.personId === pid)) ];
     }
 
+    findByValueSync(addressPartial: AddressQueryInput): PersonAddress[] {
+        const addressLst = this.addressService.findAnyByInputSync(addressPartial);
+        return [ ...this.personAddresses.filter((pa) => addressLst.some(address => pa.addressId === address.id)) ];
+    }
+
     findAllByAddressIdsSync(addressIds: string | string[]): PersonAddress[] {
         let addressesIds: string[];
         if (typeof addressIds === 'string') {
@@ -77,7 +84,8 @@ export class PersonAddressRepoService {
         return [ ...this.personAddresses.filter((pa) => addressesIds.some(aid => pa.addressId === aid)) ];
     }
 
-    constructor(private readonly tableService: TableManagementService) {
+    constructor(private readonly tableService: TableManagementService,
+                private readonly addressService: AddressRepoService) {
         this.channel = this.tableService.tableChannel('data/person-address.json');
         this.personAddresses = this.tableService.readData(this.channel);
     }

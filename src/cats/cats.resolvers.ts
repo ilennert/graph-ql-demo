@@ -17,6 +17,7 @@ import {
   Owner,
   Person,
   PersonInput,
+  PersonQueryInput,
   PetSanctuary,
   TransferPetInput} from './graphql.schema';
 import { CatsGuard } from './cats.guard';
@@ -72,18 +73,16 @@ export class CatsResolvers {
   @Query('people')
   async people(
     @Args('personInput')
-    personInput?: PersonInput
+    personInput?: PersonQueryInput
   ): Promise<Owner[]> {
     if (!personInput) {
       return await this.ownerService.findAll().pipe(
         map(pa => pa.map(p => this.mappingService.buildOwner(p.id)))
       ).toPromise();
     } else {
-      let addressLst: string[];
       let peopleList: string[];
       if (personInput.addresses) {
-        addressLst = personInput.addresses.map(a => a.id);
-        peopleList = this.ownerService.findByAddressIdsListSync(addressLst);
+        peopleList = this.ownerService.findByAddressValueSync(personInput);
         peopleList = peopleList && peopleList.length === 0 ? undefined : peopleList;
       }
       return await this.ownerService.findPeopleByList(

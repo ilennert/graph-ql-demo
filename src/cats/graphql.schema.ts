@@ -87,7 +87,13 @@ export class OwnerUpdateInput {
 
 export class PersonInput {
     name: string;
-    addresses: AddressIdInput[];
+    addresses: AddressInput[];
+    birthdate?: DateTimeInput;
+}
+
+export class PersonQueryInput {
+    name: string;
+    addresses?: AddressQueryInput[];
     birthdate?: DateTimeInput;
 }
 

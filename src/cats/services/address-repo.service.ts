@@ -13,7 +13,7 @@ export class AddressRepoService {
     private addresses: Address[] = [];
     private channel: number;
 
-    create(inData: AddressInput): Observable<Address> {
+    createSync(inData: AddressInput): Address {
         const address: Address = {
             id: Guid.create().toString(),
             street: inData.street,
@@ -27,7 +27,11 @@ export class AddressRepoService {
         // append to file
         this.tableService.writeData(this.channel, this.addresses);
 
-        return of(address);
+        return address;
+    }
+
+    create(inData: AddressInput): Observable<Address> {
+        return of(this.createSync(inData));
     }
 
     remove(id: string): Observable<Address> {
