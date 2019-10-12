@@ -214,7 +214,7 @@ export class PetSanctuaryNHistory {
 export abstract class IQuery {
     abstract addresses(queryInput?: AddressQueryInput): Address[] | Promise<Address[]>;
 
-    abstract people(personInput?: PersonInput): Owner[] | Promise<Owner[]>;
+    abstract people(personInput?: PersonQueryInput): Owner[] | Promise<Owner[]>;
 
     abstract person(id: string): Owner | Promise<Owner>;
 

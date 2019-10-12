@@ -1,6 +1,6 @@
 type Query {
     addresses(queryInput: AddressQueryInput): [Address]!
-    people(personInput: PersonInput): [Owner]!
+    people(personInput: PersonQueryInput): [Owner]!
     person(id: ID!): Owner
     cats: [Cat!]!
     cat(id: ID!): Cat
