@@ -1,0 +1,224 @@
+type Query {
+    addresses(queryInput: AddressQueryInput): [Address]!
+    people(personInput: PersonQueryInput): [Owner]!
+    person(id: ID!): Owner
+    pets: [Pet!]!
+    pet(id: ID!): Pet
+    petsWithOwners: [PetOwnerRange!]!
+    petsWithoutOwners: [PetOwnerRange!]!
+    petOwners: [Owner!]!
+    petSanctuaries: [PetSanctuary!]!
+    species(speciesInput: SpeciesInput): [Species!]!
+}
+
+type Mutation {
+    createPet(createPetInput: CreatePetInput!): Pet
+    removePet(id: ID!): Pet
+    updatePet(id: ID!, updatePetInput: UpdatePetInput!): Pet
+    createPerson(personInput: PersonInput!): Person
+    removePerson(id: ID!): Owner
+    createPetOwner (createOwnerInput: CreateOwnerInput!): Owner
+    createOwnerFromId(createOwner: OwnerIdInput!): Owner
+    createPetSanctuary(createPetSanctuaryInput: CreatePetSanctuaryInput!): PetSanctuary
+    createAddress(addressInput: AddressInput!): Address
+    removeAddress(id: ID!): Address
+    updateAddress(id: ID!, updateAddress: AddressUpdateInput!): Address
+    createPersonAddress(personId: ID!, addressId: ID!): Owner
+    removePersonAddress(personId: ID!, addressId: ID!): Owner
+    changePetOwnership(transferPetInput: TransferPetInput!): PetSanctuary
+    createSpecies(speciesInput: SpeciesInput): Species
+}
+
+type Subscription {
+    petCreated: Pet
+    petRemoved: Pet
+    petUpdated: Pet
+    petOwnershipChanged: PetOwnerRange
+}
+scalar DateTime
+
+type Pet {
+    id: String!
+    name: String!
+    age: Float!
+    breed: String!
+    species: String!
+    owners: [PetOwnerRange!]!
+}
+
+type Species {
+    id: ID!
+    name: String!
+}
+
+type Address {
+    id: ID!
+    street: String!
+    city: String!
+    stateProv: String!
+    zipPostal: String!
+}
+
+type PetSanctuary {
+    id: ID!
+    name: String!
+    address: Address!
+    petInventory: [Pet!]!
+}
+
+input SpeciesInput {
+    name: String!
+}
+
+input PetSanctuaryIdInput {
+    id: ID!
+}
+
+input CreatePetSanctuaryInput {
+    name: String!
+    addressId: ID!
+}
+
+input AddressIdInput {
+    id: ID!
+}
+input TransferPetInput{
+    sanctuaryId: ID!
+    petId: ID!
+    ownerId: ID
+    toOwner: Boolean
+}
+
+input AddressInput {
+    street: String!
+    city: String!
+    stateProv: String!
+    zipPostal: String!
+}
+
+input AddressUpdateInput {
+    street: String
+    city: String
+    stateProv: String
+    zipPostal: String
+}
+
+input AddressQueryInput {
+    street: String
+    city: String
+    stateProv: String
+    zipPostal: String
+}
+
+type Person {
+    id: ID!
+    name: String!
+    addresses: [Address!]!
+    birthdate: DateTime
+}
+
+input PersonInput {
+    name: String!
+    addresses: [AddressInput!]!
+    birthdate: DateTimeInput
+}
+
+input PersonQueryInput {
+    name: String!
+    addresses: [AddressQueryInput]
+    birthdate: DateTimeInput
+}
+
+type Owner {
+    id: ID!
+    name: String!
+    addresses: [Address!]!
+    birthdate: DateTime
+    pets: [Pet]
+}
+
+type PetOwnerRange {
+    id: ID!
+    pet: PetNHistory!
+    owner: OwnerNHistory
+    sanctuary: PetSanctuaryNHistory
+    start: DateTime!
+    end: DateTime
+}
+
+type PetNHistory {
+    id: String!
+    name: String!
+    age: Float!
+    breed: String!
+}
+
+type OwnerNHistory {
+    id: ID!
+    name: String!
+    addresses: [Address!]!
+    birthdate: DateTime
+}
+
+type PetSanctuaryNHistory {
+    id: ID!
+    name: String!
+    address: Address!
+}
+
+input DateTimeInput {
+    dateTime: String
+    year: Int
+    month: Int
+    day: Int
+    hour: Int
+    minute: Int
+    second: Int
+    millisecond: Int
+    pm: Boolean
+    hour24: Boolean
+    zone: String
+}
+
+input PetOwnerRangeInput {
+    petId: ID!
+    ownerId: ID
+    sanctuaryId: ID
+    start: DateTimeInput!
+    end: DateTimeInput
+}
+
+input CreatePetInput {
+    id: String
+    name: String!
+    age: Float!
+    breed: String!
+    species: String!
+}
+
+input UpdatePetInput {
+    name: String
+    age: Float
+    breed: String
+}
+
+input PetIdInput {
+    id: ID!
+}
+
+input CreateOwnerInput {
+    ownerId: ID!
+    sanctuaryId: ID!
+    pets: [PetIdInput!]!
+}
+
+input OwnerIdInput {
+    id: ID!
+}
+
+input OwnerUpdateInput {
+    name: String
+    addresses: [AddressIdInput]
+    birthdate: DateTime
+    pets: [PetIdInput]
+}

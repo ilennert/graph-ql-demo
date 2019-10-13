@@ -1,4 +1,4 @@
-import { DateTimeInput } from '../cats/graphql.schema';
+import { DateTimeInput } from '../pets/graphql.schema';
 
 export class Helpers {
     static testpattern(source: string, pattern: string): boolean {
