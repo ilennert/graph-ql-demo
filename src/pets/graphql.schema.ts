@@ -156,7 +156,7 @@ export abstract class IMutation {
 
     abstract changePetOwnership(transferPetInput: TransferPetInput): PetSanctuary | Promise<PetSanctuary>;
 
-    abstract createSpecies(speciesInput?: SpeciesInput): Species | Promise<Species>;
+    abstract createSpecies(speciesInput: SpeciesInput): Species | Promise<Species>;
 }
 
 export class Owner {
