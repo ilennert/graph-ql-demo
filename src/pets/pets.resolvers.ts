@@ -11,7 +11,7 @@ import {
   AddressQueryInput,
   AddressUpdateInput,
   Pet,
-  CreatePetInput,
+  PetInput,
   CreateOwnerInput,
   CreatePetSanctuaryInput,
   Owner,
@@ -19,6 +19,7 @@ import {
   PersonInput,
   PersonQueryInput,
   PetSanctuary,
+  PetSanctuaryInput,
   TransferPetInput,
   Species,
   SpeciesInput
@@ -117,7 +118,7 @@ export class PetsResolvers {
   }
 
   @Mutation('createPet')
-  async create(@Args('createPetInput') args: CreatePetInput): Promise<Pet> {
+  async create(@Args('petInput') args: PetInput): Promise<Pet> {
     const createdPet = await this.petsService.create(args).pipe(map(c =>
       this.mappingService.buildPet(c.id))).toPromise();
     pubSub.publish('petCreated', { petCreated: createdPet });
@@ -210,6 +211,25 @@ export class PetsResolvers {
     @Args('createPetSanctuaryInput') createPetSanctuaryInput: CreatePetSanctuaryInput
   ): Promise<PetSanctuary> {
     return await this.sanctuaryService.create(createPetSanctuaryInput).pipe(
+      map(s => {
+        const sanctuary: PetSanctuary = {
+          id: s.id,
+          name: s.name,
+          address: this.addressService.findOneByIdSync(s.addressId),
+          petInventory: this.ownerRangeService.findAllRangesBySanctuarySync(s.id).map(cor => {
+            return this.mappingService.buildPet(cor.petId);
+          })
+        };
+        return sanctuary;
+      })
+    ).toPromise();
+  }
+
+  @Mutation('createPetSanctuaryFull')
+  async createPetSanctuaryFull(
+    @Args('createPetSanctuaryInput') petSanctuaryInput: PetSanctuaryInput
+  ): Promise<PetSanctuary> {
+    return await this.sanctuaryService.createFull(petSanctuaryInput).pipe(
       map(s => {
         const sanctuary: PetSanctuary = {
           id: s.id,

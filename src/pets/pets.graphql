@@ -12,7 +12,7 @@ type Query {
 }
 
 type Mutation {
-    createPet(createPetInput: CreatePetInput!): Pet
+    createPet(petInput: PetInput!): Pet
     removePet(id: ID!): Pet
     updatePet(id: ID!, updatePetInput: UpdatePetInput!): Pet
     createPerson(personInput: PersonInput!): Person
@@ -20,6 +20,7 @@ type Mutation {
     createPetOwner (createOwnerInput: CreateOwnerInput!): Owner
     createOwnerFromId(createOwner: OwnerIdInput!): Owner
     createPetSanctuary(createPetSanctuaryInput: CreatePetSanctuaryInput!): PetSanctuary
+    createPetSanctuaryFull(petSanctuaryInput: PetSanctuaryInput!): PetSanctuary
     createAddress(addressInput: AddressInput!): Address
     removeAddress(id: ID!): Address
     updateAddress(id: ID!, updateAddress: AddressUpdateInput!): Address
@@ -79,6 +80,18 @@ input CreatePetSanctuaryInput {
     addressId: ID!
 }
 
+input AddressInput {
+    street: String!
+    city: String!
+    stateProv: String!
+    zipPostal: String!
+}
+
+input PetSanctuaryInput {
+    name: String!
+    address: AddressInput!
+}
+
 input AddressIdInput {
     id: ID!
 }
@@ -87,13 +100,6 @@ input TransferPetInput{
     petId: ID!
     ownerId: ID
     toOwner: Boolean
-}
-
-input AddressInput {
-    street: String!
-    city: String!
-    stateProv: String!
-    zipPostal: String!
 }
 
 input AddressUpdateInput {
@@ -188,7 +194,7 @@ input PetOwnerRangeInput {
     end: DateTimeInput
 }
 
-input CreatePetInput {
+input PetInput {
     id: String
     name: String!
     age: Float!

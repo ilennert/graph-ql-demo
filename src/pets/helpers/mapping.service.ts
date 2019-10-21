@@ -6,13 +6,8 @@ import {
   Pet,
   PetNHistory,
   PetOwnerRange,
-  CreatePetInput,
-  CreateOwnerInput,
-  CreatePetSanctuaryInput,
   Owner,
   OwnerNHistory,
-  Person,
-  PersonInput,
   PetSanctuary,
   PetSanctuaryNHistory} from '../graphql.schema';
 import { AddressRepoService } from '../services/address-repo.service';

@@ -4,10 +4,11 @@ import { Observable, of } from 'rxjs';
 import { Guid } from 'guid-typescript';
 
 import { SanctuaryModel } from '../model/sanctuary.model';
-import { PetSanctuary } from '../graphql.schema';
+import { PetSanctuary, Address } from '../graphql.schema';
 import { CreatePetSanctuaryInput } from '../graphql.schema';
+import { PetSanctuaryInput } from '../graphql.schema';
 import { TableManagementService } from './table-management.service';
-// import { AddressRepoService } from '../services/address-repo.service';
+import { AddressRepoService } from '../services/address-repo.service';
 // import { PetRepoService } from '../services/pets-repo.service';
 // import { OwnerRangeRepoService } from '../services/pet-owner-range-repo.service';
 
@@ -40,6 +41,26 @@ export class SanctuaryRepoService {
 
     create(inData: CreatePetSanctuaryInput): Observable<SanctuaryModel> {
         return of(this.createSync(inData));
+    }
+
+    createFullSync(inData: PetSanctuaryInput): SanctuaryModel {
+        const address: Address = this.addressService.createSync(inData.address);
+        const sanctuary: SanctuaryModel = {
+            id: Guid.create().toString(),
+            name: inData.name,
+            addressId: address.id
+        };
+        this.sanctuaries = [ ...this.sanctuaries, sanctuary ];
+
+        // re-write it to the file
+        // append to file
+        this.tableService.writeData(this.channel, this.sanctuaries);
+
+        return sanctuary;
+    }
+
+    createFull(inData: PetSanctuaryInput): Observable<SanctuaryModel> {
+        return of(this.createFullSync(inData));
     }
 
     removeSync(id: string): SanctuaryModel {
@@ -95,8 +116,8 @@ export class SanctuaryRepoService {
         return of(this.updateSync(id, update));
     }
 
-    constructor(private readonly tableService: TableManagementService) {
-                // private readonly addressService: AddressRepoService,
+    constructor(private readonly tableService: TableManagementService,
+                private readonly addressService: AddressRepoService) {
                 // private readonly petService: PetRepoService,
                 // private readonly petOwnerRangeService: OwnerRangeRepoService) {
         this.channel = this.tableService.tableChannel('data/santuaries.json');

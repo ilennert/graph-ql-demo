@@ -36,14 +36,6 @@ export class CreateOwnerInput {
     pets: PetIdInput[];
 }
 
-export class CreatePetInput {
-    id?: string;
-    name: string;
-    age: number;
-    breed: string;
-    species: string;
-}
-
 export class CreatePetSanctuaryInput {
     name: string;
     addressId: string;
@@ -90,6 +82,14 @@ export class PetIdInput {
     id: string;
 }
 
+export class PetInput {
+    id?: string;
+    name: string;
+    age: number;
+    breed: string;
+    species: string;
+}
+
 export class PetOwnerRangeInput {
     petId: string;
     ownerId?: string;
@@ -100,6 +100,11 @@ export class PetOwnerRangeInput {
 
 export class PetSanctuaryIdInput {
     id: string;
+}
+
+export class PetSanctuaryInput {
+    name: string;
+    address: AddressInput;
 }
 
 export class SpeciesInput {
@@ -128,7 +133,7 @@ export class Address {
 }
 
 export abstract class IMutation {
-    abstract createPet(createPetInput: CreatePetInput): Pet | Promise<Pet>;
+    abstract createPet(petInput: PetInput): Pet | Promise<Pet>;
 
     abstract removePet(id: string): Pet | Promise<Pet>;
 
@@ -143,6 +148,8 @@ export abstract class IMutation {
     abstract createOwnerFromId(createOwner: OwnerIdInput): Owner | Promise<Owner>;
 
     abstract createPetSanctuary(createPetSanctuaryInput: CreatePetSanctuaryInput): PetSanctuary | Promise<PetSanctuary>;
+
+    abstract createPetSanctuaryFull(petSanctuaryInput: PetSanctuaryInput): PetSanctuary | Promise<PetSanctuary>;
 
     abstract createAddress(addressInput: AddressInput): Address | Promise<Address>;
 

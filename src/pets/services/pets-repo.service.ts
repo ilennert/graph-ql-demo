@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Observable, of } from 'rxjs';
 import { Guid } from 'guid-typescript';
 
-import { CreatePetInput } from '../graphql.schema';
+import { PetInput } from '../graphql.schema';
 import { PetItem, initPetItem } from 'src/pets/model';
 import { TableManagementService } from './table-management.service';
 import { SpeciesRepoService } from './species-repo.service';
@@ -13,7 +13,7 @@ export class PetRepoService {
     private pets: PetItem[] = [];
     private channel: number;
 
-    create(inData: CreatePetInput): Observable<PetItem> {
+    create(inData: PetInput): Observable<PetItem> {
         const pet: PetItem = {
             id: inData.id ? inData.id : Guid.create().toString(),
             name: inData.name,
@@ -60,7 +60,7 @@ export class PetRepoService {
         return pet;
     }
 
-    update(id: string, update: Partial<CreatePetInput>): Observable<PetItem> {     // will not update owners of pets
+    update(id: string, update: Partial<PetInput>): Observable<PetItem> {     // will not update owners of pets
         const pet = this.pets.find(c => c.id === id);
         if (!pet) {
             return of(undefined);
