@@ -26,7 +26,7 @@ type Mutation {
     updateAddress(id: ID!, updateAddress: AddressUpdateInput!): Address
     createPersonAddress(personId: ID!, addressId: ID!): Owner
     removePersonAddress(personId: ID!, addressId: ID!): Owner
-    changePetOwnership(transferPetInput: TransferPetInput!): PetSanctuary
+    changePetOwnership(transferPetInput: TransferPetInput!): PetOwnerRange
     createSpecies(speciesInput: SpeciesInput!): Species
 }
 
@@ -35,7 +35,10 @@ type Subscription {
     petRemoved: Pet
     petUpdated: Pet
     petOwnershipChanged: PetOwnerRange
+    personAdded: Person
+    sanctuaryAdded: PetSanctuary
 }
+
 scalar DateTime
 
 type Pet {

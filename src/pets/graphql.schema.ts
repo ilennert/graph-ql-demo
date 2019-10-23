@@ -161,7 +161,7 @@ export abstract class IMutation {
 
     abstract removePersonAddress(personId: string, addressId: string): Owner | Promise<Owner>;
 
-    abstract changePetOwnership(transferPetInput: TransferPetInput): PetSanctuary | Promise<PetSanctuary>;
+    abstract changePetOwnership(transferPetInput: TransferPetInput): PetOwnerRange | Promise<PetOwnerRange>;
 
     abstract createSpecies(speciesInput: SpeciesInput): Species | Promise<Species>;
 }
@@ -261,6 +261,10 @@ export abstract class ISubscription {
     abstract petUpdated(): Pet | Promise<Pet>;
 
     abstract petOwnershipChanged(): PetOwnerRange | Promise<PetOwnerRange>;
+
+    abstract personAdded(): Person | Promise<Person>;
+
+    abstract sanctuaryAdded(): PetSanctuary | Promise<PetSanctuary>;
 }
 
 export type DateTime = any;
