@@ -227,7 +227,7 @@ export class PetsResolvers {
 
   @Mutation('createPetSanctuaryFull')
   async createPetSanctuaryFull(
-    @Args('createPetSanctuaryInput') petSanctuaryInput: PetSanctuaryInput
+    @Args('petSanctuaryInput') petSanctuaryInput: PetSanctuaryInput
   ): Promise<PetSanctuary> {
     return await this.sanctuaryService.createFull(petSanctuaryInput).pipe(
       map(s => {
