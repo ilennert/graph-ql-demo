@@ -3,11 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Observable, of } from 'rxjs';
 import { Guid } from 'guid-typescript';
 
-// import { PetOwnerRangeInput, PetOwnerRange, DateTimeInput } from '../graphql.schema';
 import { TableManagementService } from './table-management.service';
-import { PetRepoService } from './pets-repo.service';
-import { OwnerRepoService } from './owner-repo.service';
-import { SanctuaryRepoService } from './sanctuary-repo.service';
 import { PetOwnerRangeItem, initPetOwnerRange } from '../model/pet-owner-range.model';
 
 @Injectable()
@@ -22,8 +18,8 @@ export class OwnerRangeRepoService {
             ownerId: inData.ownerId,
             petId: inData.petId,
             sanctuaryId: inData.sanctuaryId,
-            start: inData.start,
-            end: inData.end
+            toOwner: inData.toOwner,
+            transactionDate: inData.transactionDate
         };
         // Run checks for a valid owner-range connection
         // TODO: THIS IS IMPORTANT!
@@ -33,16 +29,6 @@ export class OwnerRangeRepoService {
         // append to file
         this.tableService.writeData(this.channel, this.petRanges);
 
-        // const retval: PetOwnerRange = {
-        //     id: inData.id,
-        //     pet: this.petService.findOneByIdSync(inData.petId),
-        //     owner: inData.ownerId ? this.ownerService.findOneByIdSync(inData.ownerId) : undefined,
-        //     sanctuary: inData.sanctuaryId ? this.sanctuaryService.findOneByIdSync(inData.sanctuaryId) : undefined,
-        //     start: inData.start.toString(),
-        //     end: inData.end ? inData.end.toString() : undefined
-        // };
-
-        // return retval;
         return inData;
     }
 
@@ -57,16 +43,6 @@ export class OwnerRangeRepoService {
         // write complete file
         this.tableService.writeData(this.channel, this.petRanges);
 
-        // const retval: PetOwnerRange = {
-        //     id: range.id,
-        //     pet: this.petService.findOneByIdSync(range.petId),
-        //     owner: range.ownerId ? this.ownerService.findOneByIdSync(range.ownerId) : undefined,
-        //     sanctuary: range.sanctuaryId ? this.sanctuaryService.findOneByIdSync(range.sanctuaryId) : undefined,
-        //     start: range.start.toString(),
-        //     end: range.end ? range.end.toString() : undefined
-        // };
-
-        // return range ? retval : null;
         return range;
     }
 
@@ -138,8 +114,8 @@ export class OwnerRangeRepoService {
             ownerId: update.ownerId ? update.ownerId : range.ownerId,
             petId: update.petId && update.petId ? update.petId : range.petId,
             sanctuaryId: update.sanctuaryId ? update.sanctuaryId : range.sanctuaryId,
-            start: update.start ? update.start : range.start,
-            end: update.end ? update.end : range.end
+            toOwner: update.toOwner ? update.toOwner : range.toOwner,
+            transactionDate: update.transactionDate ? update.transactionDate : range.transactionDate
         };
         this.petRanges = this.petRanges.map(el => {
             if (el.id === id) {
@@ -147,15 +123,7 @@ export class OwnerRangeRepoService {
             }
             return el;
         });
-        // const changedOwner: PetOwnerRange = {
-        //     id: changedPetOwnerRangeItem.id,
-        //     pet: this.petService.findOneByIdSync(changedPetOwnerRangeItem.petId),
-        //     owner: changedPetOwnerRangeItem.ownerId ? this.ownerService.findOneByIdSync(changedPetOwnerRangeItem.ownerId) : undefined,
-        //     sanctuary: changedPetOwnerRangeItem.sanctuaryId ? this.sanctuaryService
-        //  .findOneByIdSync(changedPetOwnerRangeItem.sanctuaryId) : undefined,
-        //     start: changedPetOwnerRangeItem.start.toString(),
-        //     end: changedPetOwnerRangeItem.end ? changedPetOwnerRangeItem.end.toString() : undefined
-        // };
+
         // re-write the list with the object that has been updated
         // same as remove
         this.tableService.writeData(this.channel, this.petRanges);

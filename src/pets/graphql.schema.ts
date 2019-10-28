@@ -94,8 +94,8 @@ export class PetOwnerRangeInput {
     petId: string;
     ownerId?: string;
     sanctuaryId?: string;
-    start: DateTimeInput;
-    end?: DateTimeInput;
+    toOwner?: boolean;
+    transactionDate: DateTimeInput;
 }
 
 export class PetSanctuaryIdInput {
@@ -209,8 +209,8 @@ export class PetOwnerRange {
     pet: PetNHistory;
     owner?: OwnerNHistory;
     sanctuary?: PetSanctuaryNHistory;
-    start: DateTime;
-    end?: DateTime;
+    toOwner?: boolean;
+    transactionDate: DateTime;
 }
 
 export class PetSanctuary {

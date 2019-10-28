@@ -172,8 +172,8 @@ buildPetOwnerRange(id: string): PetOwnerRange {
       pet: this.buildPetNHistory(r.petId),
       owner: r.ownerId ? this.buildOwnerNHistory(r.ownerId) : undefined,
       sanctuary: r.sanctuaryId ? this.buildPetSanctuaryNHistory(r.sanctuaryId) : undefined,
-      start: r.start,
-      end: r.end
+      toOwner: r.toOwner,
+      transactionDate: r.transactionDate
     };
   }
 
@@ -183,8 +183,8 @@ buildPetOwnerRange(id: string): PetOwnerRange {
       pet: this.buildPetNHistory(item.petId),
       owner: item.ownerId ? this.buildOwnerNHistory(item.ownerId) : undefined,
       sanctuary: item.sanctuaryId ? this.buildPetSanctuaryNHistory(item.sanctuaryId) : undefined,
-      start: item.start,
-      end: item.end
+      toOwner: item.toOwner,
+      transactionDate: item.transactionDate
     };
   }
 

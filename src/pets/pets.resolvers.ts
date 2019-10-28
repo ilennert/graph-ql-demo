@@ -18,6 +18,7 @@ import {
   Person,
   PersonInput,
   PersonQueryInput,
+  PetOwnerRange,
   PetSanctuary,
   PetSanctuaryInput,
   TransferPetInput,
@@ -181,7 +182,7 @@ export class PetsResolvers {
             ownerId: person.id,
             petId: cid.id,
             sanctuaryId: createOwnerInput.sanctuaryId,
-            start: new Date(now.getTime() + (now.getTimezoneOffset() * 60000))
+            transactionDate: new Date(now.getTime() + (now.getTimezoneOffset() * 60000))
         };
         this.ownerRangeService.createSync(range);
     });
@@ -247,7 +248,7 @@ export class PetsResolvers {
   @Mutation('changePetOwnership')
   async changePetOwnership(
     @Args('transferPetInput') transferPetInput: TransferPetInput
-  ): Promise<PetSanctuary> {
+  ): Promise<PetOwnerRange> {
     const now = new Date();
     const range: PetOwnerRangeItem = {
       ...initPetOwnerRange,
@@ -255,13 +256,12 @@ export class PetsResolvers {
       ownerId: transferPetInput.ownerId,
       petId: transferPetInput.petId,
       sanctuaryId: transferPetInput.sanctuaryId,
-      start: new Date(now.getTime() + (now.getTimezoneOffset() * 60000))
+      transactionDate: new Date(now.getTime() + (now.getTimezoneOffset() * 60000))
     };
-    const sanctuary = await this.ownerRangeService.create(range).pipe(
-      map(ri => this.mappingService.buildPetSanctuary(ri.sanctuaryId))
-    ).toPromise();
-    pubSub.publish('petOwnershipChanged', { petOwnershipChanged: range });
-    return sanctuary;
+    const historyRange = await this.ownerRangeService.create(range).toPromise();
+    const retVal = this.mappingService.buildPetOwnerRangeObj(historyRange);
+    pubSub.publish('petOwnershipChanged', { petOwnershipChanged: retVal });
+    return retVal;
   }
 
   @Mutation('createSpecies')

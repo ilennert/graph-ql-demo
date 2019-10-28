@@ -151,8 +151,8 @@ type PetOwnerRange {
     pet: PetNHistory!
     owner: OwnerNHistory
     sanctuary: PetSanctuaryNHistory
-    start: DateTime!
-    end: DateTime
+    toOwner: Boolean
+    transactionDate: DateTime!
 }
 
 type PetNHistory {
@@ -193,8 +193,8 @@ input PetOwnerRangeInput {
     petId: ID!
     ownerId: ID
     sanctuaryId: ID
-    start: DateTimeInput!
-    end: DateTimeInput
+    toOwner: Boolean
+    transactionDate: DateTimeInput!
 }
 
 input PetInput {
