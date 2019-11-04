@@ -52,8 +52,8 @@ export class MappingService {
       age: c.age,
       breed: c.breed,
       species: this.speciesService.findOneByIdSync(c.speciesId).name,
-      owners: this.ownerRangeService.findAllRangesByPetThatAreOwnerSync(c.id)
-        .map(cor => this.buildPetOwnerRangeObj(cor))
+      owners: this.ownerRangeService.findAllRangesByPetSync(c.id)
+        .map(por => this.buildPetOwnerRangeObj(por))
     };
   }
 
@@ -64,8 +64,8 @@ export class MappingService {
       age: item.age,
       breed: item.breed,
       species: this.speciesService.findOneByIdSync(item.speciesId).name,
-      owners: this.ownerRangeService.findAllRangesByPetThatAreOwnerSync(item.id)
-      .map(cor => this.buildPetOwnerRangeObj(cor))
+      owners: this.ownerRangeService.findAllRangesByPetSync(item.id)
+      .map(por => this.buildPetOwnerRangeObj(por))
     };
   }
 

@@ -61,15 +61,15 @@ export class OwnerRangeRepoService {
     }
 
     findAllRangesBySanctuarySync(sanctuaryId: string): PetOwnerRangeItem[] {
-        return this.petRanges.filter((cor) => cor.sanctuaryId === sanctuaryId && !cor.ownerId);
+        return this.petRanges.filter((por) => por.sanctuaryId === sanctuaryId && !por.ownerId);
     }
 
     findAllRangesByPetSync(petId: string): PetOwnerRangeItem[] {
-        return this.petRanges.filter((cor) => cor.petId === petId);
+        return this.petRanges.filter((por) => por.petId === petId);
     }
 
     findAllRangesByPetThatAreOwnerSync(petId: string): PetOwnerRangeItem[] {
-        return this.petRanges.filter((cor) => cor.petId === petId && cor.ownerId);
+        return this.petRanges.filter((por) => por.petId === petId && por.ownerId);
     }
 
     findAllRangesByPetThatAreOwner(petId: string): Observable<PetOwnerRangeItem[]> {
