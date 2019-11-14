@@ -17,9 +17,8 @@ import { MappingService } from './helpers/mapping.service';
 @Module({
     imports: [
         GraphQLModule.forRoot({
-            typePaths: ['**/*/*.graphql']
-            // installSubscriptionHandlers: true
-            // definitions: { path: join(process.cwd(), 'src/pets/graphql.schema.ts') }
+            typePaths: ['**/*/*.graphql'],
+            installSubscriptionHandlers: true
         })
     ],
     providers: [
