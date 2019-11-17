@@ -269,6 +269,7 @@ export class PetsResolvers {
     @Args('speciesInput') speciesInput: SpeciesInput
   ): Promise<Species> {
     const createSpecies = await this.speciesService.create(speciesInput).toPromise();
+    pubSub.publish('speciesCreated', { speciesCreated: createSpecies });
     return createSpecies;
   }
 
@@ -290,5 +291,10 @@ export class PetsResolvers {
   @Subscription('petOwnershipChanged')
   petOwnershipChanged() {
     return pubSub.asyncIterator('petOwnershipChanged');
+  }
+
+  @Subscription('speciesCreated')
+  speciesCreated() {
+    return pubSub.asyncIterator('speciesCreated');
   }
 }

@@ -265,6 +265,8 @@ export abstract class ISubscription {
     abstract personAdded(): Person | Promise<Person>;
 
     abstract sanctuaryAdded(): PetSanctuary | Promise<PetSanctuary>;
+
+    abstract speciesCreated(): Species | Promise<Species>;
 }
 
 export type DateTime = any;
