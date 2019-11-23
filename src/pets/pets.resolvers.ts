@@ -167,7 +167,9 @@ export class PetsResolvers {
   async createPerson(
     @Args('personInput') personInput: PersonInput
   ): Promise<Person> {
-    return await this.ownerService.create(personInput).toPromise();
+    const personCreated = await this.ownerService.create(personInput).toPromise();
+    pubSub.publish('personAdded', { personAdded: personCreated });
+    return personCreated;
   }
 
   @Mutation('createPetOwner')
@@ -230,7 +232,7 @@ export class PetsResolvers {
   async createPetSanctuaryFull(
     @Args('petSanctuaryInput') petSanctuaryInput: PetSanctuaryInput
   ): Promise<PetSanctuary> {
-    return await this.sanctuaryService.createFull(petSanctuaryInput).pipe(
+    const retVal = await this.sanctuaryService.createFull(petSanctuaryInput).pipe(
       map(s => {
         const sanctuary: PetSanctuary = {
           id: s.id,
@@ -243,6 +245,8 @@ export class PetsResolvers {
         return sanctuary;
       })
     ).toPromise();
+    pubSub.publish('sanctuaryAdded', { sanctuaryAdded: retVal });
+    return retVal;
   }
 
   @Mutation('changePetOwnership')
@@ -291,6 +295,18 @@ export class PetsResolvers {
   @Subscription('petOwnershipChanged')
   petOwnershipChanged() {
     return pubSub.asyncIterator('petOwnershipChanged');
+  }
+
+  // personAdded: Person
+  @Subscription('personAdded')
+  personAdded() {
+    return pubSub.asyncIterator('personAdded');
+  }
+
+  // sanctuaryAdded: PetSanctuary
+  @Subscription('sanctuaryAdded')
+  sanctuaryAdded() {
+    return pubSub.asyncIterator('sanctuaryAdded');
   }
 
   @Subscription('speciesCreated')
