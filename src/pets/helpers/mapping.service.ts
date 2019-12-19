@@ -12,9 +12,11 @@ import {
   PetSanctuaryNHistory} from '../graphql.schema';
 import { AddressRepoService } from '../services/address-repo.service';
 import { PetRepoService } from '../services/pets-repo.service';
+import { OwnerPetRepoService } from '../services/owner-pet-repo.service';
 import { OwnerRepoService } from '../services/owner-repo.service';
 import { OwnerRangeRepoService } from '../services/pet-owner-range-repo.service';
 import { PersonAddressRepoService } from '../services/person-address-repo.service';
+import { SanctuaryPetRepoService } from '../services/sanctuary-pet-repo.service';
 import { SanctuaryRepoService } from '../services/sanctuary-repo.service';
 import { PetItem } from '../model/pet.model';
 import { PetOwnerRangeItem } from '../model/pet-owner-range.model';
@@ -148,7 +150,7 @@ export class MappingService {
       id: p.id,
       name: p.name,
       address: this.addressService.findOneByIdSync(p.addressId),
-      petInventory: this.ownerRangeService.findAllRangesBySanctuarySync(p.id).map(cor => {
+      petInventory: this.sanctuaryPetService.findAllBySanctuaryIdsSync(p.id).map(cor => {
         return this.buildPet(cor.petId);
       })
     };
@@ -159,7 +161,7 @@ export class MappingService {
       id: p.id,
       name: p.name,
       address: this.addressService.findOneByIdSync(p.addressId),
-      petInventory: this.ownerRangeService.findAllRangesBySanctuarySync(p.id).map(cor => {
+      petInventory: this.sanctuaryPetService.findAllBySanctuaryIdsSync(p.id).map(cor => {
         return this.buildPet(cor.petId);
       })
     };
@@ -199,7 +201,7 @@ buildPetOwnerRange(id: string): PetOwnerRange {
       id: o.id,
       name: o.name,
       addresses: this.buildAddressesFromPerson(o),
-      pets: this.ownerRangeService.findAllRangesByOwnerSync(o.id)
+      pets: this.ownerPetService.findAllByPersonIdsSync(o.id)
         .map(cor => this.buildPet(cor.petId))
     };
     return retval;
@@ -210,16 +212,18 @@ buildPetOwnerRange(id: string): PetOwnerRange {
       id: pi.id,
       name: pi.name,
       addresses: this.buildAddressesFromPerson(pi),
-      pets: this.ownerRangeService.findAllRangesByOwnerSync(pi.id)
+      pets: this.ownerPetService.findAllByPersonIdsSync(pi.id)
         .map(cor => this.buildPet(cor.petId))
     };
   }
 
   constructor(private readonly addressService: AddressRepoService,
               private readonly petsService: PetRepoService,
+              private readonly ownerPetService: OwnerPetRepoService,
               private readonly ownerService: OwnerRepoService,
               private readonly ownerRangeService: OwnerRangeRepoService,
               private readonly personAddressService: PersonAddressRepoService,
+              private readonly sanctuaryPetService: SanctuaryPetRepoService,
               private readonly sanctuaryService: SanctuaryRepoService,
               private readonly speciesService: SpeciesRepoService) {
   }
