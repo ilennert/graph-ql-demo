@@ -6,6 +6,7 @@ import { TableManagementService } from './table-management.service';
 // import { AddressRepoService } from './address-repo.service';
 import { OwnerPet } from '../model/owner-pet.model';
 // import { AddressQueryInput } from '../graphql.schema';
+import { PetOwnerRangeItem } from '../model/pet-owner-range.model';
 
 @Injectable()
 export class OwnerPetRepoService {
@@ -32,6 +33,15 @@ export class OwnerPetRepoService {
 
     create(personId: string, petId: string): Observable<OwnerPet> {
         return of(this.createSync(personId, petId));
+    }
+
+    rulesCheck(period: PetOwnerRangeItem): void {
+        // here we will ignore, create or remove
+        if (period.ownerId && period.toOwner) {
+            this.createSync(period.ownerId, period.petId);
+        } else if (period.ownerId && !period.toOwner) {
+            this.removeSync(period.ownerId, period.petId);
+        }
     }
 
     removeSync(personId: string, petId: string): OwnerPet {
@@ -84,8 +94,7 @@ export class OwnerPetRepoService {
         return [ ...this.ownerPet.filter((pa) => petsIds.some(aid => pa.petId === aid)) ];
     }
 
-    constructor(private readonly tableService: TableManagementService   // ,
-                /* private readonly addressService: AddressRepoService */) {
+    constructor(private readonly tableService: TableManagementService) {
         this.channel = this.tableService.tableChannel('data/owner-pet.json');
         this.ownerPet = this.tableService.readData(this.channel);
     }

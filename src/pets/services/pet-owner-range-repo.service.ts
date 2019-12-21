@@ -5,6 +5,8 @@ import { Guid } from 'guid-typescript';
 
 import { TableManagementService } from './table-management.service';
 import { PetOwnerRangeItem, initPetOwnerRange } from '../model/pet-owner-range.model';
+import { SanctuaryPetRepoService } from './sanctuary-pet-repo.service';
+import { OwnerPetRepoService } from './owner-pet-repo.service';
 
 @Injectable()
 export class OwnerRangeRepoService {
@@ -28,6 +30,9 @@ export class OwnerRangeRepoService {
         // re-write it to the file
         // append to file
         this.tableService.writeData(this.channel, this.petRanges);
+
+        this.ownerPetService.rulesCheck(inData);
+        this.sanctuaryPetService.rulesCheck(inData);
 
         return inData;
     }
@@ -130,7 +135,9 @@ export class OwnerRangeRepoService {
         return changedPetOwnerRangeItem;
     }
 
-    constructor(private readonly tableService: TableManagementService) {
+    constructor(private readonly tableService: TableManagementService,
+                private readonly ownerPetService: OwnerPetRepoService,
+                private readonly sanctuaryPetService: SanctuaryPetRepoService) {
         this.channel = this.tableService.tableChannel('data/pet-owner-range.json');
         this.petRanges = this.tableService.readData(this.channel);
     }

@@ -188,7 +188,9 @@ export class PetsResolvers {
         };
         this.ownerRangeService.createSync(range);
     });
-    return await of(this.mappingService.buildOwner(person.id)).toPromise();
+    const owner = this.mappingService.buildOwner(person.id);
+    pubSub.publish('ownerUpdated', { ownerUpdated: owner });
+    return owner;
   }
 
   @Mutation('createPersonAddress')
@@ -213,7 +215,7 @@ export class PetsResolvers {
   async createPetSanctuary(
     @Args('createPetSanctuaryInput') createPetSanctuaryInput: CreatePetSanctuaryInput
   ): Promise<PetSanctuary> {
-    return await this.sanctuaryService.create(createPetSanctuaryInput).pipe(
+    const nSanctuary =  await this.sanctuaryService.create(createPetSanctuaryInput).pipe(
       map(s => {
         const sanctuary: PetSanctuary = {
           id: s.id,
@@ -226,6 +228,8 @@ export class PetsResolvers {
         return sanctuary;
       })
     ).toPromise();
+    pubSub.publish('sanctuaryAdded', { sanctuaryAdded: nSanctuary });
+    return nSanctuary;
   }
 
   @Mutation('createPetSanctuaryFull')
@@ -242,6 +246,7 @@ export class PetsResolvers {
             return this.mappingService.buildPet(cor.petId);
           })
         };
+        pubSub.publish('sanctuaryAdded', { sanctuaryAdded: sanctuary });
         return sanctuary;
       })
     ).toPromise();
@@ -264,6 +269,14 @@ export class PetsResolvers {
     };
     const historyRange = await this.ownerRangeService.create(range).toPromise();
     const retVal = this.mappingService.buildPetOwnerRangeObj(historyRange);
+    if (range.ownerId) {
+      const owner = this.mappingService.buildOwner(range.ownerId);
+      pubSub.publish('ownerUpdated', { ownerUpdated: owner });
+    }
+    if (range.sanctuaryId) {
+      const sanctuary = this.mappingService.buildPetSanctuary(range.sanctuaryId);
+      pubSub.publish('sanctuaryUpdated', { sanctuaryUpdated: sanctuary });
+    }
     pubSub.publish('petOwnershipChanged', { petOwnershipChanged: retVal });
     return retVal;
   }
@@ -303,10 +316,22 @@ export class PetsResolvers {
     return pubSub.asyncIterator('personAdded');
   }
 
+  // ownerUpdated: Owner
+  @Subscription('ownerUpdated')
+  ownerUpdated() {
+    return pubSub.asyncIterator('ownerUpdated');
+  }
+
   // sanctuaryAdded: PetSanctuary
   @Subscription('sanctuaryAdded')
   sanctuaryAdded() {
     return pubSub.asyncIterator('sanctuaryAdded');
+  }
+
+  // sanctuaryUpdated: PetSanctuary
+  @Subscription('sanctuaryUpdated')
+  sanctuaryUpdated() {
+    return pubSub.asyncIterator('sanctuaryUpdated');
   }
 
   @Subscription('speciesCreated')

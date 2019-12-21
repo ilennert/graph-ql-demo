@@ -264,7 +264,15 @@ export abstract class ISubscription {
 
     abstract personAdded(): Person | Promise<Person>;
 
+    abstract ownerUpdated(): Owner | Promise<Owner>;
+
+    abstract ownerRemoved(): Owner | Promise<Owner>;
+
     abstract sanctuaryAdded(): PetSanctuary | Promise<PetSanctuary>;
+
+    abstract sanctuaryRemoved(): PetSanctuary | Promise<PetSanctuary>;
+
+    abstract sanctuaryUpdated(): PetSanctuary | Promise<PetSanctuary>;
 
     abstract speciesCreated(): Species | Promise<Species>;
 }

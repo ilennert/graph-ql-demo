@@ -6,6 +6,7 @@ import { TableManagementService } from './table-management.service';
 // import { AddressRepoService } from './address-repo.service';
 import { SanctuaryPet } from '../model/sanctuary-pet.model';
 // import { AddressQueryInput } from '../graphql.schema';
+import { PetOwnerRangeItem } from '../model/pet-owner-range.model';
 
 @Injectable()
 export class SanctuaryPetRepoService {
@@ -34,12 +35,21 @@ export class SanctuaryPetRepoService {
         return of(this.createSync(sanctuaryId, petId));
     }
 
+    rulesCheck(period: PetOwnerRangeItem): void {
+        // here we will ignore, create or remove
+        if (period.sanctuaryId && period.toOwner) {
+            this.removeSync(period.sanctuaryId, period.petId);
+        } else if (period.sanctuaryId && !period.toOwner) {
+            this.createSync(period.sanctuaryId, period.petId);
+        }
+    }
+
     removeSync(sanctuaryId: string, petId: string): SanctuaryPet {
         const sanctuaryPet = this.sanctuaryPet.find(pa => pa.sanctuaryId === sanctuaryId && pa.petId === petId);
         if (!sanctuaryPet) {
             throw new Error('PersonAddress not found');
         }
-        this.sanctuaryPet = this.sanctuaryPet.filter(pa => pa.sanctuaryId !== sanctuaryId && pa.petId !== petId);
+        this.sanctuaryPet = this.sanctuaryPet.filter(pa => !(pa.sanctuaryId === sanctuaryId && pa.petId === petId));
         // re-write the list without the object that has been removed
         // write complete file
         this.tableService.writeData(this.channel, this.sanctuaryPet);

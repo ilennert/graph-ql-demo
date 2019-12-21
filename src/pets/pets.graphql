@@ -36,7 +36,11 @@ type Subscription {
     petUpdated: Pet
     petOwnershipChanged: PetOwnerRange
     personAdded: Person
+    ownerUpdated: Owner
+    ownerRemoved: Owner
     sanctuaryAdded: PetSanctuary
+    sanctuaryRemoved: PetSanctuary
+    sanctuaryUpdated: PetSanctuary
     speciesCreated: Species
 }
 

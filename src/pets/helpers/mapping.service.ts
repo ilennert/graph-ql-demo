@@ -167,7 +167,7 @@ export class MappingService {
     };
   }
 
-buildPetOwnerRange(id: string): PetOwnerRange {
+  buildPetOwnerRange(id: string): PetOwnerRange {
     const r = this.ownerRangeService.findOneByIdSync(id);
     return {
       id: r.id,
